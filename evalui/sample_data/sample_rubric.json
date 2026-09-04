@@ -1,0 +1,28 @@
+{
+  "title": "Computer Networks Internal Assessment",
+  "subject": "Computer Networks",
+  "question": "Explain the TCP three-way handshake.",
+  "total_marks": 4.0,
+  "rubric_criteria": [
+    {
+      "description": "TCP is a connection-oriented protocol.",
+      "max_marks": 1.0,
+      "keywords": ["connection-oriented"]
+    },
+    {
+      "description": "Client sends SYN to initiate communication.",
+      "max_marks": 1.0,
+      "keywords": ["SYN"]
+    },
+    {
+      "description": "Server responds with SYN-ACK.",
+      "max_marks": 1.0,
+      "keywords": ["SYN-ACK"]
+    },
+    {
+      "description": "Client sends ACK to complete the handshake.",
+      "max_marks": 1.0,
+      "keywords": ["ACK"]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: evalui_postgres
+    environment:
+      POSTGRES_DB: evalui_db
+      POSTGRES_USER: evalui_user
+      POSTGRES_PASSWORD: evalui_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U evalui_user -d evalui_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mongo:
+    image: mongo:6.0
+    container_name: evalui_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: evalui_backend
+    environment:
+      - DB_TYPE=mongodb
+      - MONGODB_URL=mongodb://mongo:27017
+      - MONGODB_DB_NAME=evalui_db
+      - DATABASE_URL=postgresql://evalui_user:evalui_password@postgres:5432/evalui_db
+      - SEMANTIC_MODEL_NAME=sentence-transformers/all-MiniLM-L6-v2
+      - NLI_MODEL_NAME=cross-encoder/nli-distilroberta-base
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+    volumes:
+      - hf_cache:/root/.cache/huggingface
+
+volumes:
+  postgres_data:
+  mongo_data:
+  hf_cache:

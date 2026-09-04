@@ -1,0 +1,8 @@
+{
+  "Case A — Correct": "TCP is a connection-oriented protocol. The client sends a SYN packet. The server responds with SYN-ACK. Finally, the client sends ACK to complete the connection.",
+  "Case B — Contradiction": "TCP is not a connection-oriented protocol and it does not use a three-way handshake.",
+  "Case C — Partial": "TCP is connection-oriented. The client sends SYN and receives SYN-ACK.",
+  "Case D — Paraphrased": "TCP establishes communication by performing a handshake between the client and server before data exchange.",
+  "Case E — Off Topic": "Cricket is played between two teams. Players score runs by hitting the ball.",
+  "Case F — Keyword Stuffing": "TCP SYN SYN-ACK ACK HTTP UDP IP TCP SYN ACK connection-oriented."
+}
