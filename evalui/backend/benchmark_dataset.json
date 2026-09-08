@@ -1,0 +1,364 @@
+[
+  {
+    "id": "BM_001",
+    "subject": "Computer Networks",
+    "question": "Explain the TCP three-way handshake.",
+    "reference_answer": "TCP is a connection-oriented protocol. The client sends a SYN packet. The server responds with SYN-ACK. Finally, the client sends ACK to complete the connection.",
+    "rubric_criteria": [
+      {
+        "id": "C1",
+        "description": "TCP is a connection-oriented protocol.",
+        "max_marks": 1.0,
+        "keywords": ["connection-oriented"]
+      },
+      {
+        "id": "C2",
+        "description": "Client sends SYN to initiate communication.",
+        "max_marks": 1.0,
+        "keywords": ["SYN"]
+      },
+      {
+        "id": "C3",
+        "description": "Server responds with SYN-ACK.",
+        "max_marks": 1.0,
+        "keywords": ["SYN-ACK"]
+      },
+      {
+        "id": "C4",
+        "description": "Client sends ACK to complete the handshake.",
+        "max_marks": 1.0,
+        "keywords": ["ACK"]
+      }
+    ],
+    "student_answer": "TCP is a connection-oriented protocol. The client sends SYN. The server responds with SYN-ACK. Client sends ACK.",
+    "human_score": 4.0,
+    "human_credit_band": "FULL",
+    "human_contradiction_flag": false,
+    "human_duplicate_flag": false,
+    "human_reliability_status": "RELIABLE"
+  },
+  {
+    "id": "BM_002",
+    "subject": "Computer Networks",
+    "question": "Explain the TCP three-way handshake.",
+    "reference_answer": "TCP is a connection-oriented protocol.",
+    "rubric_criteria": [
+      {
+        "id": "C1",
+        "description": "TCP is a connection-oriented protocol.",
+        "max_marks": 1.0,
+        "keywords": ["connection-oriented"]
+      },
+      {
+        "id": "C2",
+        "description": "Client sends SYN to initiate communication.",
+        "max_marks": 1.0,
+        "keywords": ["SYN"]
+      },
+      {
+        "id": "C3",
+        "description": "Server responds with SYN-ACK.",
+        "max_marks": 1.0,
+        "keywords": ["SYN-ACK"]
+      },
+      {
+        "id": "C4",
+        "description": "Client sends ACK to complete the handshake.",
+        "max_marks": 1.0,
+        "keywords": ["ACK"]
+      }
+    ],
+    "student_answer": "TCP is a connectionless protocol that never uses a three-way handshake or SYN packets.",
+    "human_score": 0.0,
+    "human_credit_band": "ZERO",
+    "human_contradiction_flag": true,
+    "human_duplicate_flag": false,
+    "human_reliability_status": "RELIABLE"
+  },
+  {
+    "id": "BM_003",
+    "subject": "Computer Networks",
+    "question": "Explain the TCP three-way handshake.",
+    "reference_answer": "TCP is connection-oriented. Client sends SYN, server sends SYN-ACK, client sends ACK.",
+    "rubric_criteria": [
+      {
+        "id": "C1",
+        "description": "TCP is a connection-oriented protocol.",
+        "max_marks": 1.0,
+        "keywords": ["connection-oriented"]
+      },
+      {
+        "id": "C2",
+        "description": "Client sends SYN to initiate communication.",
+        "max_marks": 1.0,
+        "keywords": ["SYN"]
+      },
+      {
+        "id": "C3",
+        "description": "Server responds with SYN-ACK.",
+        "max_marks": 1.0,
+        "keywords": ["SYN-ACK"]
+      },
+      {
+        "id": "C4",
+        "description": "Client sends ACK to complete the handshake.",
+        "max_marks": 1.0,
+        "keywords": ["ACK"]
+      }
+    ],
+    "student_answer": "TCP is connection-oriented. The client sends a SYN packet.",
+    "human_score": 2.0,
+    "human_credit_band": "PARTIAL",
+    "human_contradiction_flag": false,
+    "human_duplicate_flag": false,
+    "human_reliability_status": "RELIABLE"
+  },
+  {
+    "id": "BM_004",
+    "subject": "Computer Networks",
+    "question": "Explain the TCP three-way handshake.",
+    "reference_answer": "TCP establishes communication via SYN, SYN-ACK, and ACK.",
+    "rubric_criteria": [
+      {
+        "id": "C1",
+        "description": "TCP is a connection-oriented protocol.",
+        "max_marks": 1.0,
+        "keywords": ["connection-oriented"]
+      },
+      {
+        "id": "C2",
+        "description": "Client sends SYN to initiate communication.",
+        "max_marks": 1.0,
+        "keywords": ["SYN"]
+      },
+      {
+        "id": "C3",
+        "description": "Server responds with SYN-ACK.",
+        "max_marks": 1.0,
+        "keywords": ["SYN-ACK"]
+      },
+      {
+        "id": "C4",
+        "description": "Client sends ACK to complete the handshake.",
+        "max_marks": 1.0,
+        "keywords": ["ACK"]
+      }
+    ],
+    "student_answer": "TCP establishes communication by performing a handshake between client and server before data exchange. Client sends SYN, server returns SYN-ACK, client acknowledges with ACK.",
+    "human_score": 4.0,
+    "human_credit_band": "FULL",
+    "human_contradiction_flag": false,
+    "human_duplicate_flag": false,
+    "human_reliability_status": "RELIABLE"
+  },
+  {
+    "id": "BM_005",
+    "subject": "Biology",
+    "question": "Explain the role of chlorophyll in photosynthesis.",
+    "reference_answer": "Chlorophyll is a green pigment in chloroplasts that absorbs sunlight energy to convert water and carbon dioxide into glucose and oxygen.",
+    "rubric_criteria": [
+      {
+        "id": "C1",
+        "description": "Chlorophyll is a green pigment in chloroplasts.",
+        "max_marks": 1.0,
+        "keywords": ["pigment", "chloroplasts"]
+      },
+      {
+        "id": "C2",
+        "description": "Absorbs sunlight energy for photosynthesis.",
+        "max_marks": 1.0,
+        "keywords": ["sunlight", "energy"]
+      },
+      {
+        "id": "C3",
+        "description": "Converts water and carbon dioxide into glucose and oxygen.",
+        "max_marks": 2.0,
+        "keywords": ["glucose", "oxygen", "water", "carbon dioxide"]
+      }
+    ],
+    "student_answer": "Chlorophyll is a green pigment inside chloroplasts. It absorbs sunlight to convert water and carbon dioxide into glucose and oxygen.",
+    "human_score": 4.0,
+    "human_credit_band": "FULL",
+    "human_contradiction_flag": false,
+    "human_duplicate_flag": false,
+    "human_reliability_status": "RELIABLE"
+  },
+  {
+    "id": "BM_006",
+    "subject": "Biology",
+    "question": "Explain the role of chlorophyll in photosynthesis.",
+    "reference_answer": "Chlorophyll is a pigment in chloroplasts that absorbs sunlight energy to convert water and carbon dioxide into glucose and oxygen.",
+    "rubric_criteria": [
+      {
+        "id": "C1",
+        "description": "Chlorophyll is a green pigment in chloroplasts.",
+        "max_marks": 1.0,
+        "keywords": ["pigment", "chloroplasts"]
+      },
+      {
+        "id": "C2",
+        "description": "Absorbs sunlight energy for photosynthesis.",
+        "max_marks": 1.0,
+        "keywords": ["sunlight", "energy"]
+      },
+      {
+        "id": "C3",
+        "description": "Converts water and carbon dioxide into glucose and oxygen.",
+        "max_marks": 2.0,
+        "keywords": ["glucose", "oxygen", "water", "carbon dioxide"]
+      }
+    ],
+    "student_answer": "Plants use chlorophyll to absorb sunlight during photosynthesis.",
+    "human_score": 2.0,
+    "human_credit_band": "PARTIAL",
+    "human_contradiction_flag": false,
+    "human_duplicate_flag": false,
+    "human_reliability_status": "RELIABLE"
+  },
+  {
+    "id": "BM_007",
+    "subject": "Biology",
+    "question": "Explain the role of chlorophyll in photosynthesis.",
+    "reference_answer": "Chlorophyll absorbs sunlight to drive photosynthesis.",
+    "rubric_criteria": [
+      {
+        "id": "C1",
+        "description": "Chlorophyll is a green pigment in chloroplasts.",
+        "max_marks": 1.0,
+        "keywords": ["pigment"]
+      },
+      {
+        "id": "C2",
+        "description": "Absorbs sunlight energy for photosynthesis.",
+        "max_marks": 1.0,
+        "keywords": ["sunlight"]
+      },
+      {
+        "id": "C3",
+        "description": "Converts water and carbon dioxide into glucose and oxygen.",
+        "max_marks": 2.0,
+        "keywords": ["glucose", "oxygen"]
+      }
+    ],
+    "student_answer": "Chlorophyll reflects all sunlight and does not participate in energy absorption or photosynthesis.",
+    "human_score": 0.0,
+    "human_credit_band": "ZERO",
+    "human_contradiction_flag": true,
+    "human_duplicate_flag": false,
+    "human_reliability_status": "RELIABLE"
+  },
+  {
+    "id": "BM_008",
+    "subject": "General Knowledge",
+    "question": "Explain the role of chlorophyll in photosynthesis.",
+    "reference_answer": "Chlorophyll absorbs sunlight.",
+    "rubric_criteria": [
+      {
+        "id": "C1",
+        "description": "Chlorophyll absorbs sunlight.",
+        "max_marks": 2.0,
+        "keywords": ["sunlight"]
+      }
+    ],
+    "student_answer": "Basketball is played on a court with two teams trying to score by shooting a ball into a hoop.",
+    "human_score": 0.0,
+    "human_credit_band": "ZERO",
+    "human_contradiction_flag": false,
+    "human_duplicate_flag": false,
+    "human_reliability_status": "RELIABLE"
+  },
+  {
+    "id": "BM_009",
+    "subject": "Computer Networks",
+    "question": "Explain the TCP three-way handshake.",
+    "reference_answer": "TCP handshake uses SYN, SYN-ACK, ACK.",
+    "rubric_criteria": [
+      {
+        "id": "C1",
+        "description": "TCP three-way handshake uses SYN, SYN-ACK, and ACK packets.",
+        "max_marks": 4.0,
+        "keywords": ["SYN", "SYN-ACK", "ACK", "handshake"]
+      }
+    ],
+    "student_answer": "SYN SYN-ACK ACK handshake SYN SYN-ACK ACK TCP.",
+    "human_score": 1.0,
+    "human_credit_band": "ZERO",
+    "human_contradiction_flag": false,
+    "human_duplicate_flag": false,
+    "human_reliability_status": "RELIABLE"
+  },
+  {
+    "id": "BM_010",
+    "subject": "Computer Networks",
+    "question": "Explain the TCP three-way handshake.",
+    "reference_answer": "TCP is a connection-oriented protocol.",
+    "rubric_criteria": [
+      {
+        "id": "C1",
+        "description": "TCP is a connection-oriented protocol.",
+        "max_marks": 4.0,
+        "keywords": ["connection-oriented"]
+      }
+    ],
+    "student_answer": "TCP is a connection-oriented protocol. The client sends a SYN packet. The server responds with SYN-ACK. Finally, the client sends ACK to complete the connection.",
+    "candidate_submissions": [
+      {
+        "id": "SUB_PREV_10",
+        "content": "TCP is a connection-oriented protocol. The client sends a SYN packet. The server responds with SYN-ACK. Finally, the client sends ACK to complete the connection."
+      }
+    ],
+    "human_score": 0.0,
+    "human_credit_band": "ZERO",
+    "human_contradiction_flag": false,
+    "human_duplicate_flag": true,
+    "human_duplicate_type": "EXACT_COPY",
+    "human_reliability_status": "RELIABLE"
+  },
+  {
+    "id": "BM_011",
+    "subject": "Computer Networks",
+    "question": "Explain the TCP three-way handshake.",
+    "reference_answer": "TCP is a connection-oriented protocol.",
+    "rubric_criteria": [
+      {
+        "id": "C1",
+        "description": "TCP is a connection-oriented protocol.",
+        "max_marks": 4.0,
+        "keywords": ["connection-oriented"]
+      }
+    ],
+    "student_answer": "TCP is a connection-oriented protocol. Client sends SYN packet. Server replies with SYN-ACK. Finally, client sends ACK to finish connection.",
+    "candidate_submissions": [
+      {
+        "id": "SUB_PREV_11",
+        "content": "TCP is a connection-oriented protocol. The client sends a SYN packet. The server responds with SYN-ACK. Finally, the client sends ACK to complete the connection."
+      }
+    ],
+    "human_score": 0.0,
+    "human_credit_band": "ZERO",
+    "human_contradiction_flag": false,
+    "human_duplicate_flag": true,
+    "human_duplicate_type": "NEAR_DUPLICATE",
+    "human_reliability_status": "RELIABLE"
+  },
+  {
+    "id": "BM_012",
+    "subject": "Quantum Physics",
+    "question": "What is quantum entanglement?",
+    "reference_answer": "asdf qwerty 12345 xyz foo bar baz",
+    "rubric_criteria": [
+      {
+        "id": "C1",
+        "description": "Quantum entanglement describes correlated particle states.",
+        "max_marks": 2.0,
+        "keywords": ["quantum", "entanglement"]
+      }
+    ],
+    "student_answer": "Quantum entanglement is a phenomenon where particles remain connected so that actions performed on one affect the other.",
+    "human_score": 0.0,
+    "human_credit_band": "ZERO",
+    "human_contradiction_flag": false,
+    "human_duplicate_flag": false,
+    "human_reliability_status": "REFERENCE_REVIEW_REQUIRED"
+  }
+]

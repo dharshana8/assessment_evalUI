@@ -66,10 +66,21 @@ export const api = {
     return res.data;
   },
 
+  listSubmissions: async (params?: { assignment_id?: string; student_id?: string }) => {
+    const res = await axios.get(`${API_BASE}/submissions`, { params });
+    return res.data;
+  },
+
+  listEvaluations: async (params?: { assignment_id?: string; student_id?: string }): Promise<EvaluationResultData[]> => {
+    const res = await axios.get(`${API_BASE}/evaluations`, { params });
+    return res.data;
+  },
+
   getEvaluation: async (id: string): Promise<EvaluationResultData> => {
     const res = await axios.get(`${API_BASE}/evaluations/${id}`);
     return res.data;
   },
+
 
   overrideScore: async (
     evaluation_id: string,

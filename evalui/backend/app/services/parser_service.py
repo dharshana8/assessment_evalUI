@@ -25,7 +25,10 @@ class ParserService:
         try:
             doc = fitz.open(stream=pdf_bytes, filetype="pdf")
             extracted_pages = []
-            for page in doc:
+            MAX_PAGES = 500  # Memory safety bound for institutional submissions
+            for i, page in enumerate(doc):
+                if i >= MAX_PAGES:
+                    break
                 text = page.get_text()
                 if text:
                     extracted_pages.append(text)
@@ -36,5 +39,6 @@ class ParserService:
             
             is_scanned_or_empty = len(normalized.strip()) == 0
             return normalized, is_scanned_or_empty
+
         except Exception as e:
             raise PDFParserException(f"Failed to parse PDF document: {str(e)}")

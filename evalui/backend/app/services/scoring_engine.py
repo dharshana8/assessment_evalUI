@@ -24,9 +24,21 @@ class ScoringEngine:
         return max(0.0, min(1.0, raw_normalized))
 
     @staticmethod
+    def calculate_evidence_strength(
+        semantic_score: float,
+        entailment_score: float
+    ) -> float:
+        """
+        Calculate composite evidence strength from semantic similarity and NLI entailment.
+        """
+        sem = max(0.0, min(1.0, semantic_score))
+        ent = max(0.0, min(1.0, entailment_score))
+        return round(0.5 * sem + 0.5 * ent, 4)
+
+    @staticmethod
     def apply_contradiction_guardrail(
         contradiction_prob: float,
-        raw_score: float
+        raw_score: float = 0.0
     ) -> bool:
         """
         Returns True if contradiction guardrail is triggered (> threshold).
@@ -38,6 +50,7 @@ class ScoringEngine:
         """
         Discretize continuous normalized score [0, 1] into clean mark bands.
         Support 0.5-mark increments or 0%, 25%, 50%, 75%, 100% bands.
+        Guaranteed to never exceed max_marks or fall below 0.0.
         """
         if max_marks <= 0:
             return 0.0
@@ -65,16 +78,23 @@ class ScoringEngine:
         max_marks: float
     ) -> Dict[str, Any]:
         """
-        Complete criterion mark calculation & status determination.
+        Complete criterion mark calculation, status determination, and scoring reason generation.
         """
+        evidence_strength = ScoringEngine.calculate_evidence_strength(semantic_score, entailment_score)
         is_contradicted = ScoringEngine.apply_contradiction_guardrail(contradiction_prob, 0.0)
 
         if is_contradicted:
+            reason = (
+                f"Contradiction guardrail triggered (contradiction probability {contradiction_prob:.2f} > "
+                f"{settings.CONTRADICTION_THRESHOLD:.2f}). 0.0/{max_marks} marks awarded."
+            )
             return {
                 "awarded_marks": 0.0,
                 "normalized_score": 0.0,
+                "evidence_strength": evidence_strength,
                 "status": "CONTRADICTED",
-                "guardrail_triggered": True
+                "guardrail_triggered": True,
+                "scoring_reason": reason
             }
 
         raw_norm = ScoringEngine.calculate_hybrid_score(
@@ -87,14 +107,28 @@ class ScoringEngine:
 
         if raw_norm >= 0.80:
             status = "ENTAILED"
+            reason = (
+                f"Full credit ({awarded}/{max_marks}) awarded. Strong hybrid evidence score ({raw_norm:.2f}) with "
+                f"semantic similarity ({semantic_score:.2f}), entailment ({entailment_score:.2f}), and lexical coverage ({lexical_score:.2f})."
+            )
         elif raw_norm >= 0.35:
             status = "PARTIAL"
+            reason = (
+                f"Partial credit ({awarded}/{max_marks}) awarded based on hybrid evidence score ({raw_norm:.2f}). "
+                f"Evidence strength is {evidence_strength:.2f} with concept coverage {lexical_score:.2f}."
+            )
         else:
             status = "UNSUPPORTED"
+            reason = (
+                f"Insufficient evidence strength (hybrid score {raw_norm:.2f} < 0.35). 0.0/{max_marks} marks awarded."
+            )
 
         return {
             "awarded_marks": awarded,
             "normalized_score": raw_norm,
+            "evidence_strength": evidence_strength,
             "status": status,
-            "guardrail_triggered": False
+            "guardrail_triggered": False,
+            "scoring_reason": reason
         }
+

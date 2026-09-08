@@ -8,7 +8,6 @@ interface StudentSubmissionProps {
   selectedAssignment: Assignment | null;
   onSelectAssignment: (assignment: Assignment) => void;
   onEvaluationComplete: (result: EvaluationResultData) => void;
-  demoAnswers?: Record<string, string>;
   healthStatus?: any;
 }
 
@@ -17,9 +16,9 @@ export const StudentSubmission: React.FC<StudentSubmissionProps> = ({
   selectedAssignment,
   onSelectAssignment,
   onEvaluationComplete,
-  demoAnswers,
   healthStatus
 }) => {
+
   const currentAssignment = selectedAssignment || (assignments.length > 0 ? assignments[0] : null);
 
   return (
@@ -61,10 +60,10 @@ export const StudentSubmission: React.FC<StudentSubmissionProps> = ({
         <SubmissionPortal
           assignment={currentAssignment}
           onEvaluationComplete={onEvaluationComplete}
-          demoAnswers={demoAnswers}
           healthStatus={healthStatus}
         />
       ) : (
+
         <div className="bg-white rounded-2xl p-8 text-center text-forest-600 border border-forest-100 shadow-card space-y-3">
           <BookOpen className="w-12 h-12 text-forest-400 mx-auto" />
           <p className="font-sans text-xs">No active assessment questions found. Please create an assignment in the Instructor Portal first.</p>

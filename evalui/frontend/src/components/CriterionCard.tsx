@@ -6,12 +6,14 @@ interface CriterionCardProps {
   criterion: CriterionEvaluation;
   onOpenOverride: (criterion: CriterionEvaluation) => void;
   isFocused?: boolean;
+  isStudentView?: boolean;
 }
 
 export const CriterionCard: React.FC<CriterionCardProps> = ({
   criterion,
   onOpenOverride,
-  isFocused
+  isFocused,
+  isStudentView = false
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -83,17 +85,19 @@ export const CriterionCard: React.FC<CriterionCardProps> = ({
             )}
           </div>
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpenOverride(criterion);
-            }}
-            className="px-2.5 py-1.5 rounded-xl bg-brand/40 hover:bg-brand text-brand-lighter hover:text-white border border-brand-light/30 text-label font-sans font-medium flex items-center space-x-1 transition-colors"
-          >
-            <Edit3 className="w-3.5 h-3.5" />
-            <span>Override</span>
-          </button>
+          {!isStudentView && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenOverride(criterion);
+              }}
+              className="px-2.5 py-1.5 rounded-xl bg-brand/40 hover:bg-brand text-brand-lighter hover:text-white border border-brand-light/30 text-label font-sans font-medium flex items-center space-x-1 transition-colors"
+            >
+              <Edit3 className="w-3.5 h-3.5" />
+              <span>Override</span>
+            </button>
+          )}
 
           <button type="button" className="text-neutral hover:text-white">
             {isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
@@ -110,7 +114,7 @@ export const CriterionCard: React.FC<CriterionCardProps> = ({
             <div className="bg-brand-navy border border-brand-light/30 rounded-xl p-3">
               <div className="text-caption font-sans font-semibold text-brand-lighter flex items-center space-x-1.5 mb-1">
                 <FileText className="w-3.5 h-3.5 text-brand-light" />
-                <span>Sentence Evidence (Sentence #{criterion.evidence.sentence_id + 1}):</span>
+                <span>Supporting Sentence Evidence (Sentence #{criterion.evidence.sentence_id + 1}):</span>
               </div>
               <p className="text-body text-slate-200 italic font-sans pl-5">
                 "{criterion.evidence.text}"
@@ -122,70 +126,42 @@ export const CriterionCard: React.FC<CriterionCardProps> = ({
             </div>
           )}
 
-          {/* AI Metrics Breakdown Bars */}
-          <div className="space-y-3 bg-brand-navy/80 p-4 rounded-xl border border-brand-light/30">
-            <div className="text-label font-sans font-semibold text-brand-lighter uppercase tracking-wider">
-              NLP Engine Component Scores
-            </div>
+          {/* AI Component Metrics (Tutor/Admin view only) */}
+          {!isStudentView && (
+            <div className="space-y-3 bg-brand-navy/80 p-4 rounded-xl border border-brand-light/30">
+              <div className="text-label font-sans font-semibold text-brand-lighter uppercase tracking-wider">
+                NLP Engine Component Scores
+              </div>
 
-            {/* Semantic Similarity Bar */}
-            <div className="space-y-1">
-              <div className="flex justify-between text-body font-sans font-medium">
-                <span className="text-slate-300">Semantic Similarity (all-MiniLM-L6-v2)</span>
-                <span className="text-brand-light font-mono font-medium">{(criterion.semantic_score * 100).toFixed(1)}%</span>
+              {/* Semantic Similarity Bar */}
+              <div className="space-y-1">
+                <div className="flex justify-between text-body font-sans font-medium">
+                  <span className="text-slate-300">Semantic Similarity</span>
+                  <span className="text-brand-light font-mono font-medium">{(criterion.semantic_score * 100).toFixed(1)}%</span>
+                </div>
+                <div className="w-full bg-brand-navy h-2 rounded-full overflow-hidden border border-brand-light/20">
+                  <div
+                    className="bg-brand-light h-full rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, Math.max(0, criterion.semantic_score * 100))}%` }}
+                  />
+                </div>
               </div>
-              <div className="w-full bg-brand-navy h-2 rounded-full overflow-hidden border border-brand-light/20">
-                <div
-                  className="bg-brand-light h-full rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min(100, Math.max(0, criterion.semantic_score * 100))}%` }}
-                />
-              </div>
-            </div>
 
-            {/* Entailment Score Bar */}
-            <div className="space-y-1">
-              <div className="flex justify-between text-body font-sans font-medium">
-                <span className="text-slate-300">Entailment Probability (RoBERTa NLI)</span>
-                <span className="text-brand-lighter font-mono font-medium">{(criterion.entailment_score * 100).toFixed(1)}%</span>
-              </div>
-              <div className="w-full bg-brand-navy h-2 rounded-full overflow-hidden border border-brand-light/20">
-                <div
-                  className="bg-brand-lighter h-full rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min(100, Math.max(0, criterion.entailment_score * 100))}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Contradiction Probability Bar */}
-            <div className="space-y-1">
-              <div className="flex justify-between text-body font-sans font-medium">
-                <span className="text-slate-300">Contradiction Probability</span>
-                <span className={`font-mono font-medium ${criterion.contradiction_probability > 0.60 ? 'text-danger font-bold' : 'text-slate-300'}`}>
-                  {(criterion.contradiction_probability * 100).toFixed(1)}%
-                </span>
-              </div>
-              <div className="w-full bg-brand-navy h-2 rounded-full overflow-hidden border border-brand-light/20">
-                <div
-                  className={`h-full rounded-full transition-all duration-500 ${criterion.contradiction_probability > 0.60 ? 'bg-danger' : 'bg-neutral'}`}
-                  style={{ width: `${Math.min(100, Math.max(0, criterion.contradiction_probability * 100))}%` }}
-                />
+              {/* Entailment Score Bar */}
+              <div className="space-y-1">
+                <div className="flex justify-between text-body font-sans font-medium">
+                  <span className="text-slate-300">Entailment Probability</span>
+                  <span className="text-brand-lighter font-mono font-medium">{(criterion.entailment_score * 100).toFixed(1)}%</span>
+                </div>
+                <div className="w-full bg-brand-navy h-2 rounded-full overflow-hidden border border-brand-light/20">
+                  <div
+                    className="bg-brand-lighter h-full rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, Math.max(0, criterion.entailment_score * 100))}%` }}
+                  />
+                </div>
               </div>
             </div>
-
-            {/* Lexical Score Bar */}
-            <div className="space-y-1">
-              <div className="flex justify-between text-body font-sans font-medium">
-                <span className="text-slate-300">Lexical Concept Coverage</span>
-                <span className="text-partial font-mono font-medium">{(criterion.lexical_score * 100).toFixed(1)}%</span>
-              </div>
-              <div className="w-full bg-brand-navy h-2 rounded-full overflow-hidden border border-brand-light/20">
-                <div
-                  className="bg-partial h-full rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min(100, Math.max(0, criterion.lexical_score * 100))}%` }}
-                />
-              </div>
-            </div>
-          </div>
+          )}
 
           {/* Feedback Text */}
           <div className="text-body font-sans text-slate-200 leading-relaxed bg-brand-navy/60 p-3.5 rounded-xl border border-brand-light/20">

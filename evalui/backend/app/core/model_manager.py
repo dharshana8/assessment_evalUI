@@ -101,7 +101,7 @@ class ModelManager:
                 if self.nli_model is None or self.nli_tokenizer is None:
                     logger.info(f"Loading NLI Model: {settings.NLI_MODEL_NAME}")
                     start = time.time()
-                    self.nli_tokenizer = AutoTokenizer.from_pretrained(settings.NLI_MODEL_NAME)
+                    self.nli_tokenizer = AutoTokenizer.from_pretrained(settings.NLI_MODEL_NAME, use_fast=False)
                     self.nli_model = AutoModelForSequenceClassification.from_pretrained(settings.NLI_MODEL_NAME)
                     self.nli_model.to(torch.device("cpu"))
                     self.nli_model.eval()
@@ -146,6 +146,14 @@ class ModelManager:
         return self.spacy_nlp
 
     def cleanup_memory(self) -> None:
+        """Explicit memory garbage collection and cache clearing."""
         gc.collect()
+        try:
+            import torch
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+        except ImportError:
+            pass
+
 
 model_manager = ModelManager()

@@ -5,9 +5,11 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from app.database.database import get_db
 from app.models.db_models import Submission, Assignment, Evaluation, CriterionEvaluation, TeacherOverride
-from app.schemas.evaluation import EvaluationResponse, OverrideCreate, CriterionEvaluationResponse
+from app.schemas.evaluation import EvaluationResponse, OverrideCreate, CriterionEvaluationResponse, ReliabilitySchema, DuplicateSchema, ConfidenceSchema, InternalEvaluationResult, build_internal_evaluation_result
 from app.core.model_manager import model_manager
 from app.services.evaluation_engine import EvaluationEngine
+from app.services.duplicate_engine import DuplicateEngine
+from app.services.confidence_engine import ConfidenceEngine
 from app.services.report_service import ReportService
 from app.services.text_processor import TextProcessor
 
@@ -17,6 +19,7 @@ class EvaluateRequest(BaseModel):
     submission_id: str = Field(..., description="ID of submission to evaluate")
 
 @router.post("", response_model=EvaluationResponse)
+@router.post("/evaluate", response_model=EvaluationResponse)
 def trigger_evaluation(payload: EvaluateRequest, db: Session = Depends(get_db)):
     if not model_manager.is_ready():
         raise HTTPException(
@@ -47,13 +50,41 @@ def trigger_evaluation(payload: EvaluateRequest, db: Session = Depends(get_db)):
             "keywords": kws
         })
 
+    # Duplicate detection: check against prior submissions for this assignment (excluding current)
+    prior_submissions = db.query(Submission).filter(
+        Submission.assignment_id == assignment.id,
+        Submission.id != submission.id
+    ).all()
+    candidate_list = [{"id": s.id, "content": s.content} for s in prior_submissions]
+    domain_keywords = [kw for c in rubric_list for kw in (c.get("keywords") or [])]
+    dup_engine = DuplicateEngine()
+    dup_result = dup_engine.check_duplicate(
+        target_text=submission.content,
+        candidate_submissions=candidate_list,
+        domain_keywords=domain_keywords
+    )
+
     # Run AI evaluation engine
     evaluation_engine = EvaluationEngine()
     eval_result = evaluation_engine.evaluate_submission(
         student_text=submission.content,
-        rubric_criteria=rubric_list
+        rubric_criteria=rubric_list,
+        question=assignment.question,
+        duplicate_score=dup_result["duplicate_score"],
+        duplicate_type=dup_result["duplicate_type"]
     )
 
+    rel_info = eval_result.get("reliability", {})
+    rel_score = rel_info.get("score", 1.0)
+    rel_status = rel_info.get("status", "RELIABLE")
+    rel_issues = json.dumps(rel_info.get("issues", []))
+
+    conf_info = eval_result.get("confidence", ConfidenceEngine().compute(
+        evaluated_criteria=eval_result.get("criteria", []),
+        reliability_score=rel_score,
+        duplicate_score=dup_result["duplicate_score"],
+        duplicate_type=dup_result["duplicate_type"]
+    ))
 
     # Persist in DB
     db_eval = Evaluation(
@@ -61,7 +92,18 @@ def trigger_evaluation(payload: EvaluateRequest, db: Session = Depends(get_db)):
         total_score=eval_result["total_score"],
         max_score=eval_result["max_score"],
         processing_time=eval_result["processing_time"],
-        diagnostic_summary=eval_result["diagnostic_summary"]
+        diagnostic_summary=eval_result["diagnostic_summary"],
+        reliability_score=rel_score,
+        reliability_status=rel_status,
+        reliability_issues=rel_issues,
+        duplicate_flag=dup_result["duplicate_flag"],
+        duplicate_type=dup_result["duplicate_type"],
+        duplicate_score=dup_result["duplicate_score"],
+        matched_submission_id=dup_result["matched_submission_id"],
+        confidence_score=conf_info.get("confidence_score", 1.0),
+        confidence_level=conf_info.get("confidence_level", "HIGH"),
+        review_required=conf_info.get("review_required", False),
+        confidence_reasons=json.dumps(conf_info.get("reasons", []))
     )
     db.add(db_eval)
     db.flush()
@@ -141,26 +183,88 @@ def get_evaluation(evaluation_id: str, db: Session = Depends(get_db)):
         else:
             ev_dict = None
 
+        fb_data = FeedbackEngine.generate_criterion_feedback_data(
+            status=c_eval.status,
+            criterion_desc=rubric_crit.description,
+            missing_keywords=all_kws if c_eval.status != "ENTAILED" else [],
+            keyword_stuffing=c_eval.keyword_stuffing_detected,
+            evidence_text=c_eval.evidence_text or "",
+            contradiction_prob=c_eval.contradiction_probability,
+            awarded_marks=c_eval.awarded_marks,
+            max_marks=rubric_crit.max_marks
+        )
+
+        ev_str = round(0.5 * c_eval.semantic_score + 0.5 * c_eval.entailment_score, 4)
+        sc_reason = (
+            f"Contradiction guardrail triggered. 0/{rubric_crit.max_marks} marks awarded." if c_eval.status == "CONTRADICTED"
+            else f"Awarded {c_eval.awarded_marks}/{rubric_crit.max_marks} marks based on hybrid score."
+        )
+
         criteria_responses.append(CriterionEvaluationResponse(
             id=c_eval.id,
             criterion_id=rubric_crit.id,
             description=rubric_crit.description,
+            criterion_name=rubric_crit.description,
             max_marks=rubric_crit.max_marks,
             awarded_marks=c_eval.awarded_marks,
             semantic_score=c_eval.semantic_score,
             entailment_score=c_eval.entailment_score,
             contradiction_probability=c_eval.contradiction_probability,
             lexical_score=c_eval.lexical_score,
+            evidence_strength=ev_str,
             status=c_eval.status,
             evidence=ev_dict,
-            missing_concepts=all_kws,
+            supporting_evidence=c_eval.evidence_text if c_eval.evidence_text else None,
+            missing_concepts=all_kws if c_eval.status != "ENTAILED" else [],
+            contradiction_detail=fb_data.get("contradiction"),
+            improvement_suggestion=fb_data.get("improvement_suggestion"),
+            scoring_reason=sc_reason,
             keyword_stuffing_detected=c_eval.keyword_stuffing_detected,
-            feedback=c_eval.feedback,
+            feedback=c_eval.feedback or fb_data["feedback"],
             override_score=override_val,
             override_reason=override_reason
         ))
 
     pct = round((final_total_score / db_eval.max_score * 100.0), 2) if db_eval.max_score > 0 else 0.0
+
+    try:
+        rel_issues_list = json.loads(db_eval.reliability_issues) if db_eval.reliability_issues else []
+    except Exception:
+        rel_issues_list = []
+
+    rel_schema = ReliabilitySchema(
+        score=db_eval.reliability_score if db_eval.reliability_score is not None else 1.0,
+        status=db_eval.reliability_status or "RELIABLE",
+        issues=rel_issues_list
+    )
+
+    dup_schema = DuplicateSchema(
+        duplicate_flag=db_eval.duplicate_flag or False,
+        duplicate_type=db_eval.duplicate_type or "ORIGINAL",
+        duplicate_score=db_eval.duplicate_score or 0.0,
+        matched_submission_id=db_eval.matched_submission_id
+    )
+
+    try:
+        conf_reasons_list = json.loads(db_eval.confidence_reasons) if db_eval.confidence_reasons else []
+    except Exception:
+        conf_reasons_list = []
+
+    conf_schema = ConfidenceSchema(
+        confidence_score=db_eval.confidence_score if db_eval.confidence_score is not None else 1.0,
+        confidence_level=db_eval.confidence_level or "HIGH",
+        review_required=db_eval.review_required if db_eval.review_required is not None else False,
+        reasons=conf_reasons_list
+    )
+
+    eval_data_for_internal = {
+        "total_score": round(final_total_score, 2),
+        "max_score": db_eval.max_score,
+        "reliability": rel_schema.model_dump(),
+        "confidence": conf_schema.model_dump(),
+        "criteria": [c.model_dump() for c in criteria_responses]
+    }
+    internal_res = build_internal_evaluation_result(eval_data_for_internal, dup_schema.model_dump())
 
     return EvaluationResponse(
         evaluation_id=db_eval.id,
@@ -178,6 +282,10 @@ def get_evaluation(evaluation_id: str, db: Session = Depends(get_db)):
         sentences=sentences,
         criteria=criteria_responses,
         diagnostic_summary=db_eval.diagnostic_summary or "",
+        reliability=rel_schema,
+        duplicate=dup_schema,
+        confidence=conf_schema,
+        internal_result=internal_res,
         created_at=db_eval.created_at
     )
 
@@ -221,3 +329,26 @@ def get_pdf_report(evaluation_id: str, db: Session = Depends(get_db)):
         media_type="application/pdf",
         headers={"Content-Disposition": f"attachment; filename={filename}"}
     )
+
+from typing import Optional
+
+@router.get("", response_model=List[EvaluationResponse])
+def list_evaluations(
+    student_id: Optional[str] = None,
+    assignment_id: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    query = db.query(Evaluation).join(Submission)
+    if student_id:
+        query = query.filter(Submission.student_id == student_id)
+    if assignment_id:
+        query = query.filter(Submission.assignment_id == assignment_id)
+    evals = query.order_by(Evaluation.created_at.desc()).all()
+    results = []
+    for e in evals:
+        try:
+            results.append(get_evaluation(e.id, db))
+        except Exception:
+            pass
+    return results
+

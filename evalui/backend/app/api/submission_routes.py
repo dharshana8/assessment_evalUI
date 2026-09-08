@@ -62,3 +62,20 @@ async def submit_pdf(
     db.commit()
     db.refresh(submission)
     return submission
+
+from typing import List, Optional
+
+@router.get("", response_model=List[SubmissionResponse])
+def list_submissions(
+    assignment_id: Optional[str] = None,
+    student_id: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+
+    query = db.query(Submission)
+    if assignment_id:
+        query = query.filter(Submission.assignment_id == assignment_id)
+    if student_id:
+        query = query.filter(Submission.student_id == student_id)
+    return query.order_by(Submission.created_at.desc()).all()
+

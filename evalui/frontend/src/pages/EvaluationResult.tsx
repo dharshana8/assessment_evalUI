@@ -13,12 +13,14 @@ interface EvaluationResultProps {
   data: EvaluationResultData;
   onUpdateResult: (updated: EvaluationResultData) => void;
   onBack: () => void;
+  isStudentView?: boolean;
 }
 
 export const EvaluationResult: React.FC<EvaluationResultProps> = ({
   data,
   onUpdateResult,
-  onBack
+  onBack,
+  isStudentView = false
 }) => {
   const [selectedSentenceId, setSelectedSentenceId] = useState<number | null>(null);
   const [overrideCriterion, setOverrideCriterion] = useState<CriterionEvaluation | null>(null);
@@ -155,6 +157,7 @@ export const EvaluationResult: React.FC<EvaluationResultProps> = ({
                   criterion={crit}
                   onOpenOverride={setOverrideCriterion}
                   isFocused={isFocused}
+                  isStudentView={isStudentView}
                 />
               );
             })}

@@ -1,44 +1,30 @@
 import React, { useState } from 'react';
-import { Upload, FileText, Send, Zap, AlertTriangle, Clock, Sparkles, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { Upload, FileText, Send, AlertTriangle, Clock, Sparkles, CheckCircle2 } from 'lucide-react';
 import { Assignment, EvaluationResultData } from '../types/evaluation';
 import { api } from '../services/api';
 import { LoadingSkeleton } from './LoadingSkeleton';
-import { DemoModeModal } from './DemoModeModal';
 
 interface SubmissionPortalProps {
   assignment: Assignment;
   onEvaluationComplete: (result: EvaluationResultData) => void;
-  demoAnswers?: Record<string, string>;
   healthStatus?: any;
 }
 
 export const SubmissionPortal: React.FC<SubmissionPortalProps> = ({
   assignment,
   onEvaluationComplete,
-  demoAnswers,
   healthStatus
 }) => {
   const [activeTab, setActiveTab] = useState<'text' | 'pdf'>('text');
-  const [evalMode, setEvalMode] = useState<'live' | 'demo'>('live');
 
-  const [studentText, setStudentText] = useState(
-    'TCP is a connection-oriented protocol. The client sends a SYN packet. The server responds with SYN-ACK. Finally, the client sends ACK to complete the connection.'
-  );
+  const [studentText, setStudentText] = useState('');
   const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const [studentId, setStudentId] = useState('STUDENT_101');
+  const [studentId, setStudentId] = useState('');
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [warmingNotice, setWarmingNotice] = useState<string | null>(null);
-  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
 
   const isModelReady = healthStatus?.models_loaded || healthStatus?.ai_engine === 'ready';
-
-  const handleSelectDemoCase = (caseName: string, text: string) => {
-    setStudentText(text);
-    setActiveTab('text');
-    setErrorMsg(null);
-    setWarmingNotice(null);
-  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -58,8 +44,7 @@ export const SubmissionPortal: React.FC<SubmissionPortalProps> = ({
     setErrorMsg(null);
     setWarmingNotice(null);
 
-    // If Live Evaluation mode selected but models still warming up:
-    if (evalMode === 'live' && !isModelReady) {
+    if (!isModelReady) {
       setWarmingNotice("AI evaluation engine is still warming up. Please wait a moment.");
       return;
     }
@@ -67,67 +52,6 @@ export const SubmissionPortal: React.FC<SubmissionPortalProps> = ({
     setIsEvaluating(true);
 
     try {
-      // In Demo Mode, simulate instant cached response
-      if (evalMode === 'demo') {
-        setTimeout(async () => {
-          try {
-            let submission = await api.submitText({
-              assignment_id: assignment.id,
-              student_id: studentId,
-              content: studentText
-            });
-            const result = await api.triggerEvaluation(submission.id);
-            onEvaluationComplete(result);
-          } catch (err: any) {
-            // Fallback demo result structure if backend unavailable
-            onEvaluationComplete({
-              evaluation_id: 'demo_eval_001',
-              submission_id: 'sub_demo_101',
-              assignment_id: assignment.id,
-              assignment_title: assignment.title,
-              question: assignment.question,
-              student_id: studentId,
-              student_answer: studentText,
-              total_score: 4.0,
-              final_score: 4.0,
-              max_score: 4.0,
-              percentage: 100.0,
-              processing_time: 0.12,
-              sentences: [
-                'TCP is a connection-oriented protocol.',
-                'The client sends a SYN packet.',
-                'The server responds with SYN-ACK.',
-                'Finally, the client sends ACK to complete the connection.'
-              ],
-              criteria: [
-                {
-                  id: 'c1',
-                  criterion_id: 'crit-1',
-                  description: 'TCP is a connection-oriented protocol.',
-                  max_marks: 1.0,
-                  awarded_marks: 1.0,
-                  semantic_score: 0.96,
-                  entailment_score: 0.98,
-                  contradiction_probability: 0.01,
-                  lexical_score: 1.0,
-                  status: 'ENTAILED',
-                  evidence: { sentence_id: 0, text: 'TCP is a connection-oriented protocol.', similarity: 0.96, entailment: 0.98, contradiction: 0.01, status: 'entailed' },
-                  missing_concepts: [],
-                  keyword_stuffing_detected: false,
-                  feedback: 'Fully entailed by answer.'
-                }
-              ],
-              diagnostic_summary: 'Demo evaluation completed instantly.',
-              created_at: new Date().toISOString()
-            });
-          } finally {
-            setIsEvaluating(false);
-          }
-        }, 300);
-        return;
-      }
-
-      // Live Evaluation Mode
       let submission: any;
       if (activeTab === 'text') {
         if (!studentText.trim()) {
@@ -135,7 +59,7 @@ export const SubmissionPortal: React.FC<SubmissionPortalProps> = ({
         }
         submission = await api.submitText({
           assignment_id: assignment.id,
-          student_id: studentId,
+          student_id: studentId.trim() || 'STUDENT_001',
           content: studentText
         });
       } else {
@@ -144,7 +68,7 @@ export const SubmissionPortal: React.FC<SubmissionPortalProps> = ({
         }
         const formData = new FormData();
         formData.append('assignment_id', assignment.id);
-        formData.append('student_id', studentId);
+        formData.append('student_id', studentId.trim() || 'STUDENT_001');
         formData.append('file', pdfFile);
 
         submission = await api.submitPdf(formData);
@@ -171,64 +95,6 @@ export const SubmissionPortal: React.FC<SubmissionPortalProps> = ({
   return (
     <div className="bg-white rounded-3xl p-6 shadow-card border border-forest-100 space-y-6 animate-fadeIn">
       
-      {/* 1-Click Hackathon Demo Mode Header Banner */}
-      <div className="bg-gradient-to-r from-forest-900 via-forest-850 to-forest-950 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 text-white border border-forest-700/60 shadow-md">
-        <div className="flex items-center space-x-3">
-          <div className="p-2.5 rounded-xl bg-mint-500/20 text-mint-300 border border-mint-400/30">
-            <Zap className="w-5 h-5 fill-current" />
-          </div>
-          <div>
-            <h4 className="text-sm font-display font-bold text-white">1-Click Hackathon Demo Mode</h4>
-            <p className="text-xs font-sans text-emerald-200/80">Load pre-configured TCP test cases (Cases A–F) instantly without manual typing</p>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setIsDemoModalOpen(true)}
-          className="px-4 py-2 rounded-xl bg-mint-500 hover:bg-mint-400 text-forest-950 font-display font-semibold text-xs shadow-md flex items-center space-x-1.5 transition-all hover:scale-105"
-        >
-          <Zap className="w-4 h-4 fill-current" />
-          <span>Launch Demo Cases (A–F)</span>
-        </button>
-      </div>
-
-      {/* Mode Selector: Demo Evaluation vs Live Local AI Evaluation */}
-      <div className="flex items-center justify-between p-3.5 bg-forest-50/60 rounded-2xl border border-forest-100 text-xs">
-        <div className="flex items-center space-x-2">
-          <span className="font-semibold text-forest-900 font-sans">Evaluation Engine Mode:</span>
-          <span className="text-forest-500 font-mono text-[11px] hidden sm:inline">Choose inference pipeline</span>
-        </div>
-
-        <div className="flex items-center space-x-1 bg-white p-1 rounded-xl border border-forest-200 shadow-sm">
-          <button
-            type="button"
-            onClick={() => { setEvalMode('live'); setWarmingNotice(null); }}
-            className={`px-3 py-1.5 rounded-lg font-display font-semibold transition-all flex items-center space-x-1.5 ${
-              evalMode === 'live'
-                ? 'bg-forest-900 text-mint-300 shadow-sm'
-                : 'text-forest-600 hover:text-forest-900'
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Live Local AI Evaluation</span>
-          </button>
-          
-          <button
-            type="button"
-            onClick={() => { setEvalMode('demo'); setWarmingNotice(null); }}
-            className={`px-3 py-1.5 rounded-lg font-display font-semibold transition-all flex items-center space-x-1.5 ${
-              evalMode === 'demo'
-                ? 'bg-mint-500 text-forest-950 shadow-sm'
-                : 'text-forest-600 hover:text-forest-900'
-            }`}
-          >
-            <Zap className="w-3.5 h-3.5 fill-current" />
-            <span>Demo Evaluation (Instant)</span>
-          </button>
-        </div>
-      </div>
-
       {/* Assignment Header Summary */}
       <div className="bg-forest-900 text-white border border-forest-800 rounded-2xl p-5 space-y-3 shadow-md">
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -284,6 +150,7 @@ export const SubmissionPortal: React.FC<SubmissionPortalProps> = ({
               type="text"
               value={studentId}
               onChange={(e) => setStudentId(e.target.value)}
+              placeholder="e.g. STUDENT_101"
               className="w-full bg-forest-50/50 border border-forest-200 rounded-xl px-3.5 py-2 text-xs font-mono text-forest-900 focus:outline-none focus:border-mint-500"
             />
           </div>
@@ -298,7 +165,7 @@ export const SubmissionPortal: React.FC<SubmissionPortalProps> = ({
               rows={6}
               value={studentText}
               onChange={(e) => setStudentText(e.target.value)}
-              placeholder="Paste student answer text here..."
+              placeholder="Type or paste student descriptive answer text here..."
               className="w-full bg-forest-50/30 border border-forest-200 rounded-2xl p-4 text-xs font-sans text-forest-900 focus:outline-none focus:border-mint-500 leading-relaxed"
             />
           </div>
@@ -336,7 +203,7 @@ export const SubmissionPortal: React.FC<SubmissionPortalProps> = ({
             <Clock className="w-5 h-5 text-amber-600 flex-shrink-0 animate-spin" />
             <div className="flex-1">
               <strong className="font-bold block text-amber-950 font-display">AI Model Initializing</strong>
-              <span>{warmingNotice} Switch to "Demo Evaluation (Instant)" to test UI immediately.</span>
+              <span>{warmingNotice}</span>
             </div>
           </div>
         )}
@@ -359,18 +226,12 @@ export const SubmissionPortal: React.FC<SubmissionPortalProps> = ({
             className="px-6 py-3 rounded-xl bg-mint-500 hover:bg-mint-400 text-forest-950 font-display font-bold text-xs shadow-md flex items-center space-x-2 transition-all hover:scale-105 disabled:opacity-50"
           >
             <Send className="w-4 h-4 stroke-[2.5]" />
-            <span>{evalMode === 'demo' ? 'Evaluate Demo Answer (Instant)' : 'Evaluate Live Local AI'}</span>
+            <span>Evaluate Submission</span>
           </button>
         </div>
       </form>
 
-      {/* Demo Mode Modal */}
-      <DemoModeModal
-        isOpen={isDemoModalOpen}
-        onClose={() => setIsDemoModalOpen(false)}
-        onSelectCase={handleSelectDemoCase}
-      />
-
     </div>
   );
 };
+

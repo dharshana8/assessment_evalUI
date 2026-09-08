@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AppSidebar } from './components/AppSidebar';
 import { Topbar } from './components/Topbar';
-import { DemoModeModal, DEMO_CASES } from './components/DemoModeModal';
 import { LoginPage } from './pages/LoginPage';
 import { StaffDashboard } from './pages/StaffDashboard';
 import { StudentDashboard } from './pages/StudentDashboard';
@@ -16,39 +15,6 @@ import { User } from './types/auth';
 import { Assignment, EvaluationResultData } from './types/evaluation';
 import { api } from './services/api';
 
-const DEFAULT_DEMO_USER: User = {
-  id: 'usr-1',
-  name: 'Dr. Dharshana S',
-  email: 'dharshana@sece.ac.in',
-  role: 'STAFF',
-  organization_id: 'org_sece_7329',
-  organization_name: 'Sri Eshwar College of Engineering',
-  organization_code: 'SECE',
-  department: 'Computer Science & Business Systems',
-};
-
-const DEMO_TCP_ASSIGNMENT = {
-  title: 'Computer Networks Internal Assessment',
-  subject: 'Computer Networks',
-  question: 'Explain the TCP three-way handshake.',
-  total_marks: 4.0,
-  rubric_criteria: [
-    { description: 'TCP is a connection-oriented protocol.', max_marks: 1.0, keywords: ['connection-oriented'] },
-    { description: 'Client sends SYN to initiate communication.', max_marks: 1.0, keywords: ['SYN'] },
-    { description: 'Server responds with SYN-ACK.', max_marks: 1.0, keywords: ['SYN-ACK'] },
-    { description: 'Client sends ACK to complete the handshake.', max_marks: 1.0, keywords: ['ACK'] }
-  ]
-};
-
-const DEMO_ANSWERS: Record<string, string> = {
-  'Case A — Correct': 'TCP is a connection-oriented protocol. The client sends a SYN packet. The server responds with SYN-ACK. Finally, the client sends ACK to complete the connection.',
-  'Case B — Contradiction': 'TCP is not a connection-oriented protocol and it does not use a three-way handshake.',
-  'Case C — Partial': 'TCP is connection-oriented. The client sends SYN and receives SYN-ACK.',
-  'Case D — Paraphrased': 'TCP establishes communication by performing a handshake between the client and server before data exchange.',
-  'Case E — Off Topic': 'Cricket is played between two teams. Players score runs by hitting the ball.',
-  'Case F — Keyword Stuffing': 'TCP SYN SYN-ACK ACK HTTP UDP IP TCP SYN ACK connection-oriented.'
-};
-
 export const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     try {
@@ -59,7 +25,6 @@ export const App: React.FC = () => {
     }
   });
   const [activeTab, setActiveTab] = useState<string>('dashboard');
-  const [isDemoModalOpen, setIsDemoModalOpen] = useState<boolean>(false);
 
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
@@ -74,9 +39,7 @@ export const App: React.FC = () => {
       if (list.length > 0 && !selectedAssignment) {
         setSelectedAssignment(list[0]);
       } else if (list.length === 0) {
-        const created = await api.createAssignment(DEMO_TCP_ASSIGNMENT);
-        setAssignments([created]);
-        setSelectedAssignment(created);
+        setSelectedAssignment(null);
       }
     } catch (err) {
       console.error('Failed to fetch assignments:', err);
@@ -102,7 +65,7 @@ export const App: React.FC = () => {
 
     const interval = setInterval(async () => {
       await checkHealth();
-    }, 3000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
@@ -120,10 +83,18 @@ export const App: React.FC = () => {
   const handleLogout = () => {
     try {
       localStorage.removeItem('evalui_user');
+      localStorage.removeItem('evalui_token');
+      sessionStorage.clear();
     } catch (e) {}
     setCurrentUser(null);
+    setActiveTab('dashboard');
+    setSelectedAssignment(null);
+    setEvaluationResult(null);
+    // Push new entry to prevent back-button navigation into protected state
+    if (window.history && window.history.pushState) {
+      window.history.pushState(null, '', window.location.href);
+    }
   };
-
 
   // Handle Evaluation Complete
   const handleEvaluationComplete = (result: EvaluationResultData) => {
@@ -131,73 +102,11 @@ export const App: React.FC = () => {
     setActiveTab('result');
   };
 
-  // Handle selecting a demo case from DemoModeModal
-  const handleSelectDemoCase = async (caseKey: string, studentText: string) => {
-    try {
-      setIsLoading(true);
-      // Ensure we have a valid assignment
-      let targetAssignment = selectedAssignment;
-      if (!targetAssignment) {
-        const list = await api.listAssignments();
-        if (list.length > 0) {
-          targetAssignment = list[0];
-        } else {
-          targetAssignment = await api.createAssignment(DEMO_TCP_ASSIGNMENT);
-        }
-      }
-
-      // Submit and evaluate
-      const sub = await api.createSubmission(targetAssignment.id, studentText);
-      const evalRes = await api.evaluateSubmission(sub.id);
-      setEvaluationResult(evalRes);
-      setActiveTab('result');
-    } catch (err) {
-      console.error('Demo evaluation failed:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Switch Role / User identity during demo
-  const handleSwitchUserRole = (role: 'STAFF' | 'STUDENT' | 'ORG_ADMIN') => {
-    if (!currentUser) return;
-    if (role === 'STAFF') {
-      setCurrentUser({
-        ...currentUser,
-        name: 'Dr. Dharshana S',
-        email: 'dharshana@sece.ac.in',
-        role: 'STAFF',
-      });
-    } else if (role === 'STUDENT') {
-      setCurrentUser({
-        ...currentUser,
-        name: 'Ananya Sharma',
-        email: 'ananya.s2024csbs@sece.ac.in',
-        role: 'STUDENT',
-        department: 'Computer Science & Business Systems',
-        batch: '2024',
-        student_id: '732924CSBS001',
-      });
-    } else if (role === 'ORG_ADMIN') {
-      setCurrentUser({
-        ...currentUser,
-        name: 'Dr. Dharshana S (Org Admin)',
-        email: 'dharshana@sece.ac.in',
-        role: 'ORG_ADMIN',
-      });
-    }
-    setActiveTab('dashboard');
-  };
-
-  // If user is not logged in, show LoginPage
+  // If user is not logged in, show LoginPage (Guards all protected routes)
   if (!currentUser) {
     return (
       <LoginPage 
         onLoginSuccess={handleLoginSuccess}
-        onLaunchDemo={() => {
-          handleLoginSuccess(DEFAULT_DEMO_USER);
-          setIsDemoModalOpen(true);
-        }}
       />
     );
   }
@@ -211,7 +120,6 @@ export const App: React.FC = () => {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onLogout={handleLogout}
-        onLaunchDemo={() => setIsDemoModalOpen(true)}
       />
 
       {/* Main App Content Area */}
@@ -222,47 +130,9 @@ export const App: React.FC = () => {
           user={currentUser}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
-          onLaunchDemo={() => setIsDemoModalOpen(true)}
           healthStatus={healthStatus}
+          onLogout={handleLogout}
         />
-
-        {/* Dynamic Role Switcher Bar (Demo Quick Controls) */}
-        <div className="bg-forest-900 text-white px-6 py-2 flex items-center justify-between border-b border-forest-800 text-xs font-mono">
-          <div className="flex items-center space-x-2">
-            <span className="text-mint-400 font-bold">⚡ LIVE DEMO ROLE:</span>
-            <span className="text-emerald-200 font-sans">
-              {currentUser.name} ({currentUser.role})
-            </span>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <span className="text-forest-400 text-[10px] uppercase tracking-wider">Quick Switch:</span>
-            <button
-              onClick={() => handleSwitchUserRole('STAFF')}
-              className={`px-2.5 py-1 rounded text-[11px] font-sans font-medium transition-colors ${
-                currentUser.role === 'STAFF' ? 'bg-mint-500 text-forest-950 font-bold' : 'bg-forest-800 text-emerald-200 hover:bg-forest-700'
-              }`}
-            >
-              Faculty / Staff
-            </button>
-            <button
-              onClick={() => handleSwitchUserRole('STUDENT')}
-              className={`px-2.5 py-1 rounded text-[11px] font-sans font-medium transition-colors ${
-                currentUser.role === 'STUDENT' ? 'bg-mint-500 text-forest-950 font-bold' : 'bg-forest-800 text-emerald-200 hover:bg-forest-700'
-              }`}
-            >
-              Student
-            </button>
-            <button
-              onClick={() => handleSwitchUserRole('ORG_ADMIN')}
-              className={`px-2.5 py-1 rounded text-[11px] font-sans font-medium transition-colors ${
-                currentUser.role === 'ORG_ADMIN' ? 'bg-mint-500 text-forest-950 font-bold' : 'bg-forest-800 text-emerald-200 hover:bg-forest-700'
-              }`}
-            >
-              Org Admin
-            </button>
-          </div>
-        </div>
 
         {/* Main View Area */}
         <main className="flex-1 overflow-y-auto">
@@ -285,10 +155,9 @@ export const App: React.FC = () => {
                       onNavigate={setActiveTab}
                       onStartAssignment={(asm) => { setSelectedAssignment(asm); setActiveTab('submissions'); }}
                       onViewResults={() => setActiveTab('submissions')}
-                      onLaunchDemo={() => setIsDemoModalOpen(true)}
                     />
                   ) : (
-                    <StaffDashboard user={currentUser} onNavigate={setActiveTab} />
+                    <StaffDashboard user={currentUser} assignments={assignments} onSelectAssignment={setSelectedAssignment} onNavigate={setActiveTab} />
                   )}
 
                 </>
@@ -310,11 +179,9 @@ export const App: React.FC = () => {
                   selectedAssignment={selectedAssignment}
                   onSelectAssignment={setSelectedAssignment}
                   onEvaluationComplete={handleEvaluationComplete}
-                  demoAnswers={DEMO_ANSWERS}
                   healthStatus={healthStatus}
                 />
               )}
-
 
               {/* Evaluation Result View */}
               {activeTab === 'result' && evaluationResult && (
@@ -322,6 +189,7 @@ export const App: React.FC = () => {
                   data={evaluationResult}
                   onUpdateResult={setEvaluationResult}
                   onBack={() => setActiveTab('submissions')}
+                  isStudentView={currentUser?.role === 'STUDENT'}
                 />
               )}
 
@@ -344,15 +212,9 @@ export const App: React.FC = () => {
         </main>
       </div>
 
-      {/* 1-Click Demo Mode Modal */}
-      <DemoModeModal
-        isOpen={isDemoModalOpen}
-        onClose={() => setIsDemoModalOpen(false)}
-        onSelectCase={handleSelectDemoCase}
-      />
-
     </div>
   );
 };
 
 export default App;
+

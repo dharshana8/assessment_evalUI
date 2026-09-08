@@ -24,16 +24,15 @@ interface AppSidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   onLogout: () => void;
-  onLaunchDemo: () => void;
 }
 
 export const AppSidebar: React.FC<AppSidebarProps> = ({
   user,
   activeTab,
   setActiveTab,
-  onLogout,
-  onLaunchDemo
+  onLogout
 }) => {
+
   const role: UserRole = user?.role || 'STAFF';
 
   // Navigation Items per Role
@@ -41,12 +40,11 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
     if (role === 'ORG_ADMIN' || role === 'PLATFORM_ADMIN') {
       return [
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-        { id: 'organizations', label: 'Organizations', icon: Building2 },
-        { id: 'users', label: 'Users & Staff', icon: Users },
-        { id: 'assignments', label: 'All Assignments', icon: BookOpen },
-        { id: 'evaluations', label: 'Evaluations', icon: CheckSquare },
-        { id: 'reports', label: 'Analytics & Reports', icon: BarChart3 },
-        { id: 'settings', label: 'Org Settings', icon: Settings },
+        { id: 'users', label: 'Users Management', icon: Users },
+        { id: 'assignments', label: 'Assignments Data', icon: BookOpen },
+        { id: 'evaluations', label: 'Evaluation Monitoring', icon: CheckSquare },
+        { id: 'settings', label: 'System Health & Settings', icon: Settings },
+        { id: 'profile', label: 'Profile', icon: UserIcon },
       ];
     }
 
@@ -54,22 +52,20 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
       return [
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { id: 'my-assignments', label: 'My Assignments', icon: BookOpen },
-        { id: 'submissions', label: 'My Submissions', icon: Send },
+        { id: 'submissions', label: 'Submit Answer', icon: Send },
         { id: 'results', label: 'My Results', icon: CheckSquare },
-        { id: 'progress', label: 'Learning Progress', icon: BarChart3 },
+        { id: 'profile', label: 'Profile & Settings', icon: UserIcon },
       ];
     }
 
-    // Default: STAFF / FACULTY (Matches reference screenshot)
+    // STAFF / TUTOR Navigation Workflow
     return [
       { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-      { id: 'my-assignments', label: 'My Assignments', icon: BookOpen },
+      { id: 'assignments', label: 'Assignments', icon: BookOpen },
       { id: 'create-assignment', label: 'Create Assignment', icon: PlusCircle },
-      { id: 'rubrics', label: 'Rubrics', icon: FileText },
-      { id: 'submissions', label: 'Submissions', icon: Send },
-      { id: 'evaluations', label: 'Evaluations', icon: CheckSquare },
+      { id: 'evaluations', label: 'Submissions & Evaluations', icon: Send },
       { id: 'reports', label: 'Reports', icon: BarChart3 },
-      { id: 'students', label: 'Students', icon: Users },
+      { id: 'settings', label: 'Settings & Profile', icon: Settings },
     ];
   };
 
@@ -120,15 +116,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
 
       {/* Bottom Section: Organization Badge & Account Actions */}
       <div className="p-4 space-y-4 border-t border-forest-800/80 bg-forest-950/40">
-        
-        {/* 1-Click Demo Mode Button */}
-        <button
-          onClick={onLaunchDemo}
-          className="w-full flex items-center justify-center space-x-2 py-2 px-3 rounded-xl bg-mint-500 hover:bg-mint-400 text-forest-950 font-display font-semibold text-label shadow-md transition-all hover:scale-[1.02]"
-        >
-          <Zap className="w-4 h-4 fill-forest-950" />
-          <span>⚡ Launch Demo Mode</span>
-        </button>
+
 
         {/* Organization Card */}
         <div className="bg-forest-800/50 p-3 rounded-2xl border border-forest-700/60 flex items-center space-x-3">

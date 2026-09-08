@@ -6,10 +6,10 @@ import { api } from '../services/api';
 
 interface LoginPageProps {
   onLoginSuccess: (user: User) => void;
-  onLaunchDemo?: () => void;
 }
 
-export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onLaunchDemo }) => {
+export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
+
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   
   // Registration / Login Form Fields
@@ -139,22 +139,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onLaunchDe
               <span>Sentence Evidence Grounding & NLI Guardrails</span>
             </div>
           </div>
-
-          {/* Quick Demo Mode Switch */}
-          {onLaunchDemo && (
-            <div className="relative z-10 pt-4 border-t border-forest-800">
-              <button
-                type="button"
-                onClick={onLaunchDemo}
-                className="w-full py-2.5 px-4 rounded-xl bg-mint-500 hover:bg-mint-400 text-forest-950 font-display font-semibold text-xs shadow-md flex items-center justify-center space-x-2 transition-all hover:scale-105"
-              >
-                <Sparkles className="w-4 h-4 fill-forest-950" />
-                <span>⚡ Hackathon 1-Click Demo Mode</span>
-              </button>
-            </div>
-          )}
-
         </div>
+
 
         {/* Right Panel: Login / Register Form */}
         <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-center space-y-6 bg-white overflow-y-auto max-h-[85vh]">

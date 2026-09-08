@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Bell, Cpu, ChevronDown, CheckCircle2, Clock } from 'lucide-react';
+import { Search, Bell, Cpu, ChevronDown, CheckCircle2, Clock, LogOut } from 'lucide-react';
 import { User } from '../types/auth';
 import { AiEngineStatusModal } from './AiEngineStatusModal';
 
@@ -7,11 +7,12 @@ interface TopbarProps {
   user: User | null;
   activeTab?: string;
   setActiveTab?: (tab: string) => void;
-  onLaunchDemo?: () => void;
   healthStatus?: any;
+  onLogout?: () => void;
 }
 
-export const Topbar: React.FC<TopbarProps> = ({ user, healthStatus }) => {
+export const Topbar: React.FC<TopbarProps> = ({ user, healthStatus, onLogout }) => {
+
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
 
   const isReady = healthStatus?.models_loaded || healthStatus?.ai_engine === 'ready';
@@ -72,20 +73,27 @@ export const Topbar: React.FC<TopbarProps> = ({ user, healthStatus }) => {
             </span>
           </div>
 
-          {/* User Profile Pill */}
+          {/* User Profile & Logout Pill */}
           <div className="flex items-center space-x-3 pl-2 border-l border-forest-100">
             <div className="w-9 h-9 rounded-full bg-forest-900 text-mint-300 font-display font-semibold text-xs flex items-center justify-center border border-forest-700 shadow-sm">
-              {user?.name?.charAt(0) || 'D'}
+              {user?.name?.charAt(0) || 'U'}
             </div>
             <div className="hidden sm:block text-left">
               <div className="text-xs font-sans font-bold text-forest-900 leading-tight">
-                {user?.name || 'Dr. Dharshana S'}
+                {user?.name || 'User'}
               </div>
               <div className="text-[10px] font-sans text-forest-500 leading-tight">
                 {roleLabel}
               </div>
             </div>
-            <ChevronDown className="w-4 h-4 text-forest-400" />
+            <button
+              onClick={onLogout}
+              title="Log Out"
+              className="flex items-center space-x-1 text-xs text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 px-2.5 py-1.5 rounded-lg font-medium transition-colors ml-2"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">Logout</span>
+            </button>
           </div>
 
         </div>

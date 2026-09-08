@@ -1,0 +1,1170 @@
+{
+  "summary_metrics": {
+    "total_samples": 12,
+    "exact_score_agreement_rate": 0.3333,
+    "mean_absolute_error_mae": 1.2917,
+    "normalized_mae_nmae": 0.3229,
+    "pearson_correlation_r": 0.2391,
+    "partial_credit_agreement_rate": 0.5833,
+    "contradiction_detection": {
+      "precision": 0.2,
+      "recall": 0.5,
+      "f1_score": 0.2857,
+      "accuracy": 0.5833,
+      "tp": 1,
+      "fp": 4,
+      "tn": 6,
+      "fn": 1
+    },
+    "duplicate_detection": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "accuracy": 1.0,
+      "tp": 2,
+      "fp": 0,
+      "tn": 10,
+      "fn": 0
+    },
+    "confidence_vs_correctness_correlation": -0.5549,
+    "reliability_gate_accuracy": 0.8333
+  },
+  "error_analysis_summary": {
+    "over_scored_count": 3,
+    "under_scored_count": 3,
+    "contradiction_false_positives": 4,
+    "contradiction_false_negatives": 1,
+    "duplicate_false_positives": 0,
+    "duplicate_false_negatives": 0
+  },
+  "sample_details": [
+    {
+      "id": "BM_001",
+      "subject": "Computer Networks",
+      "question": "Explain the TCP three-way handshake.",
+      "student_answer": "TCP is a connection-oriented protocol. The client sends SYN. The server responds with SYN-ACK. Client sends ACK.",
+      "max_score": 4.0,
+      "human_score": 4.0,
+      "ai_score": 1.0,
+      "score_error": 3.0,
+      "normalized_error": 0.75,
+      "score_accuracy": 0.25,
+      "human_credit_band": "FULL",
+      "ai_credit_band": "PARTIAL",
+      "credit_band_match": false,
+      "human_contradiction": false,
+      "ai_contradiction": true,
+      "contradiction_match": false,
+      "human_duplicate": false,
+      "human_duplicate_type": "ORIGINAL",
+      "ai_duplicate": false,
+      "ai_duplicate_type": "ORIGINAL",
+      "duplicate_match": true,
+      "human_reliability": "RELIABLE",
+      "ai_reliability": "RELIABLE",
+      "reliability_match": true,
+      "ai_confidence_score": 0.0536,
+      "ai_confidence_level": "LOW",
+      "ai_review_required": true,
+      "internal_result": {
+        "score": 1.0,
+        "max_score": 4.0,
+        "reliability": {
+          "score": 0.81,
+          "status": "RELIABLE",
+          "issues": []
+        },
+        "criteria": [
+          {
+            "criterion_id": "C1",
+            "max_marks": 1.0,
+            "awarded_marks": 1.0,
+            "status": "ENTAILED",
+            "semantic_score": 1.0,
+            "concept_coverage": 1.0,
+            "evidence": [
+              {
+                "sentence": "TCP is a connection-oriented protocol.",
+                "support": 1.0
+              }
+            ],
+            "missing_concepts": [],
+            "contradiction": false,
+            "feedback": "Correctly identified: \"TCP is a connection-oriented protocol.\" directly supports 'TCP is a connection-oriented protocol.'. Suggestion: Maintain this level of precision and supporting evidence in your explanations."
+          },
+          {
+            "criterion_id": "C2",
+            "max_marks": 1.0,
+            "awarded_marks": 0.0,
+            "status": "CONTRADICTED",
+            "semantic_score": 0.5728,
+            "concept_coverage": 1.0,
+            "evidence": [
+              {
+                "sentence": "Client sends ACK.",
+                "support": 0.5728
+              }
+            ],
+            "missing_concepts": [],
+            "contradiction": true,
+            "feedback": "\u26a0 Keyword stuffing detected: Rubric terms were listed without coherent semantic structure. Direct contradiction found in answer: \"Client sends ACK.\". Statement conflicts with factual rubric requirements for 'Client sends SYN to initiate communication.' (contradiction score: 0.93). Suggestion: Review core domain principles for 'Client sends SYN to initiate communication.' and correct the contradictory statement."
+          },
+          {
+            "criterion_id": "C3",
+            "max_marks": 1.0,
+            "awarded_marks": 0.0,
+            "status": "CONTRADICTED",
+            "semantic_score": 0.6032,
+            "concept_coverage": 1.0,
+            "evidence": [
+              {
+                "sentence": "Client sends ACK.",
+                "support": 0.6032
+              }
+            ],
+            "missing_concepts": [],
+            "contradiction": true,
+            "feedback": "\u26a0 Keyword stuffing detected: Rubric terms were listed without coherent semantic structure. Direct contradiction found in answer: \"Client sends ACK.\". Statement conflicts with factual rubric requirements for 'Server responds with SYN-ACK.' (contradiction score: 0.75). Suggestion: Review core domain principles for 'Server responds with SYN-ACK.' and correct the contradictory statement."
+          },
+          {
+            "criterion_id": "C4",
+            "max_marks": 1.0,
+            "awarded_marks": 0.0,
+            "status": "CONTRADICTED",
+            "semantic_score": 0.6391,
+            "concept_coverage": 1.0,
+            "evidence": [
+              {
+                "sentence": "The client sends SYN.",
+                "support": 0.6391
+              }
+            ],
+            "missing_concepts": [],
+            "contradiction": true,
+            "feedback": "\u26a0 Keyword stuffing detected: Rubric terms were listed without coherent semantic structure. Direct contradiction found in answer: \"The client sends SYN.\". Statement conflicts with factual rubric requirements for 'Client sends ACK to complete the handshake.' (contradiction score: 0.91). Suggestion: Review core domain principles for 'Client sends ACK to complete the handshake.' and correct the contradictory statement."
+          }
+        ],
+        "duplicate": {
+          "flag": false,
+          "type": "ORIGINAL",
+          "score": 0.0
+        },
+        "confidence": {
+          "score": 0.0536,
+          "level": "LOW",
+          "review_required": true
+        }
+      }
+    },
+    {
+      "id": "BM_002",
+      "subject": "Computer Networks",
+      "question": "Explain the TCP three-way handshake.",
+      "student_answer": "TCP is a connectionless protocol that never uses a three-way handshake or SYN packets.",
+      "max_score": 4.0,
+      "human_score": 0.0,
+      "ai_score": 0.0,
+      "score_error": 0.0,
+      "normalized_error": 0.0,
+      "score_accuracy": 1.0,
+      "human_credit_band": "ZERO",
+      "ai_credit_band": "ZERO",
+      "credit_band_match": true,
+      "human_contradiction": true,
+      "ai_contradiction": false,
+      "contradiction_match": false,
+      "human_duplicate": false,
+      "human_duplicate_type": "ORIGINAL",
+      "ai_duplicate": false,
+      "ai_duplicate_type": "ORIGINAL",
+      "duplicate_match": true,
+      "human_reliability": "RELIABLE",
+      "ai_reliability": "REFERENCE_REVIEW_REQUIRED",
+      "reliability_match": false,
+      "ai_confidence_score": 0.0,
+      "ai_confidence_level": "LOW",
+      "ai_review_required": true,
+      "internal_result": {
+        "score": 0.0,
+        "max_score": 4.0,
+        "reliability": {
+          "score": 0.38,
+          "status": "REFERENCE_REVIEW_REQUIRED",
+          "issues": [
+            "Rubric criterion 'Client sends SYN to initiate communication.' is missing or weakly represented in the reference answer.",
+            "Rubric criterion 'Server responds with SYN-ACK.' is missing or weakly represented in the reference answer.",
+            "Rubric criterion 'Client sends ACK to complete the handshake.' is missing or weakly represented in the reference answer."
+          ]
+        },
+        "criteria": [
+          {
+            "criterion_id": "C1",
+            "max_marks": 1.0,
+            "awarded_marks": 0.0,
+            "status": "REFERENCE_REVIEW_REQUIRED",
+            "semantic_score": 0.0,
+            "concept_coverage": 0.0,
+            "evidence": [],
+            "missing_concepts": [
+              "connection-oriented"
+            ],
+            "contradiction": false,
+            "feedback": "Evaluation suspended: Reference answer or rubric failed internal reliability checks."
+          },
+          {
+            "criterion_id": "C2",
+            "max_marks": 1.0,
+            "awarded_marks": 0.0,
+            "status": "REFERENCE_REVIEW_REQUIRED",
+            "semantic_score": 0.0,
+            "concept_coverage": 0.0,
+            "evidence": [],
+            "missing_concepts": [
+              "SYN"
+            ],
+            "contradiction": false,
+            "feedback": "Evaluation suspended: Reference answer or rubric failed internal reliability checks."
+          },
+          {
+            "criterion_id": "C3",
+            "max_marks": 1.0,
+            "awarded_marks": 0.0,
+            "status": "REFERENCE_REVIEW_REQUIRED",
+            "semantic_score": 0.0,
+            "concept_coverage": 0.0,
+            "evidence": [],
+            "missing_concepts": [
+              "SYN-ACK"
+            ],
+            "contradiction": false,
+            "feedback": "Evaluation suspended: Reference answer or rubric failed internal reliability checks."
+          },
+          {
+            "criterion_id": "C4",
+            "max_marks": 1.0,
+            "awarded_marks": 0.0,
+            "status": "REFERENCE_REVIEW_REQUIRED",
+            "semantic_score": 0.0,
+            "concept_coverage": 0.0,
+            "evidence": [],
+            "missing_concepts": [
+              "ACK"
+            ],
+            "contradiction": false,
+            "feedback": "Evaluation suspended: Reference answer or rubric failed internal reliability checks."
+          }
+        ],
+        "duplicate": {
+          "flag": false,
+          "type": "ORIGINAL",
+          "score": 0.0
+        },
+        "confidence": {
+          "score": 0.0,
+          "level": "LOW",
+          "review_required": true
+        }
+      }
+    },
+    {
+      "id": "BM_003",
+      "subject": "Computer Networks",
+      "question": "Explain the TCP three-way handshake.",
+      "student_answer": "TCP is connection-oriented. The client sends a SYN packet.",
+      "max_score": 4.0,
+      "human_score": 2.0,
+      "ai_score": 2.0,
+      "score_error": 0.0,
+      "normalized_error": 0.0,
+      "score_accuracy": 1.0,
+      "human_credit_band": "PARTIAL",
+      "ai_credit_band": "PARTIAL",
+      "credit_band_match": true,
+      "human_contradiction": false,
+      "ai_contradiction": true,
+      "contradiction_match": false,
+      "human_duplicate": false,
+      "human_duplicate_type": "ORIGINAL",
+      "ai_duplicate": false,
+      "ai_duplicate_type": "ORIGINAL",
+      "duplicate_match": true,
+      "human_reliability": "RELIABLE",
+      "ai_reliability": "RELIABLE",
+      "reliability_match": true,
+      "ai_confidence_score": 0.3212,
+      "ai_confidence_level": "LOW",
+      "ai_review_required": true,
+      "internal_result": {
+        "score": 2.0,
+        "max_score": 4.0,
+        "reliability": {
+          "score": 0.81,
+          "status": "RELIABLE",
+          "issues": []
+        },
+        "criteria": [
+          {
+            "criterion_id": "C1",
+            "max_marks": 1.0,
+            "awarded_marks": 1.0,
+            "status": "ENTAILED",
+            "semantic_score": 0.9247,
+            "concept_coverage": 1.0,
+            "evidence": [
+              {
+                "sentence": "TCP is connection-oriented.",
+                "support": 0.9247
+              }
+            ],
+            "missing_concepts": [],
+            "contradiction": false,
+            "feedback": "Correctly identified: \"TCP is connection-oriented.\" directly supports 'TCP is a connection-oriented protocol.'. Suggestion: Maintain this level of precision and supporting evidence in your explanations."
+          },
+          {
+            "criterion_id": "C2",
+            "max_marks": 1.0,
+            "awarded_marks": 0.5,
+            "status": "PARTIAL",
+            "semantic_score": 0.9141,
+            "concept_coverage": 1.0,
+            "evidence": [
+              {
+                "sentence": "The client sends a SYN packet.",
+                "support": 0.9141
+              }
+            ],
+            "missing_concepts": [],
+            "contradiction": false,
+            "feedback": "\u26a0 Keyword stuffing detected: Rubric terms were listed without coherent semantic structure. Identified partially in answer: \"The client sends a SYN packet.\". The response lacks sufficient context or depth to satisfy the full rubric criterion. Suggestion: Elaborate further on 'Client sends SYN to initiate communication.' with specific explanations and step-by-step detail."
+          },
+          {
+            "criterion_id": "C3",
+            "max_marks": 1.0,
+            "awarded_marks": 0.5,
+            "status": "PARTIAL",
+            "semantic_score": 0.5633,
+            "concept_coverage": 0.0,
+            "evidence": [
+              {
+                "sentence": "The client sends a SYN packet.",
+                "support": 0.5633
+              }
+            ],
+            "missing_concepts": [
+              "SYN-ACK"
+            ],
+            "contradiction": false,
+            "feedback": "Identified partially in answer: \"The client sends a SYN packet.\". However, key required concept(s) missing or incomplete: [SYN-ACK]. Suggestion: To earn full credit, explicitly explain how SYN-ACK relates to 'Server responds with SYN-ACK.'."
+          },
+          {
+            "criterion_id": "C4",
+            "max_marks": 1.0,
+            "awarded_marks": 0.0,
+            "status": "CONTRADICTED",
+            "semantic_score": 0.6621,
+            "concept_coverage": 1.0,
+            "evidence": [
+              {
+                "sentence": "The client sends a SYN packet.",
+                "support": 0.6621
+              }
+            ],
+            "missing_concepts": [],
+            "contradiction": true,
+            "feedback": "\u26a0 Keyword stuffing detected: Rubric terms were listed without coherent semantic structure. Direct contradiction found in answer: \"The client sends a SYN packet.\". Statement conflicts with factual rubric requirements for 'Client sends ACK to complete the handshake.' (contradiction score: 0.86). Suggestion: Review core domain principles for 'Client sends ACK to complete the handshake.' and correct the contradictory statement."
+          }
+        ],
+        "duplicate": {
+          "flag": false,
+          "type": "ORIGINAL",
+          "score": 0.0
+        },
+        "confidence": {
+          "score": 0.3212,
+          "level": "LOW",
+          "review_required": true
+        }
+      }
+    },
+    {
+      "id": "BM_004",
+      "subject": "Computer Networks",
+      "question": "Explain the TCP three-way handshake.",
+      "student_answer": "TCP establishes communication by performing a handshake between client and server before data exchange. Client sends SYN, server returns SYN-ACK, client acknowledges with ACK.",
+      "max_score": 4.0,
+      "human_score": 4.0,
+      "ai_score": 2.5,
+      "score_error": 1.5,
+      "normalized_error": 0.375,
+      "score_accuracy": 0.625,
+      "human_credit_band": "FULL",
+      "ai_credit_band": "PARTIAL",
+      "credit_band_match": false,
+      "human_contradiction": false,
+      "ai_contradiction": false,
+      "contradiction_match": true,
+      "human_duplicate": false,
+      "human_duplicate_type": "ORIGINAL",
+      "ai_duplicate": false,
+      "ai_duplicate_type": "ORIGINAL",
+      "duplicate_match": true,
+      "human_reliability": "RELIABLE",
+      "ai_reliability": "RELIABLE",
+      "reliability_match": true,
+      "ai_confidence_score": 0.424,
+      "ai_confidence_level": "LOW",
+      "ai_review_required": true,
+      "internal_result": {
+        "score": 2.5,
+        "max_score": 4.0,
+        "reliability": {
+          "score": 0.81,
+          "status": "RELIABLE",
+          "issues": []
+        },
+        "criteria": [
+          {
+            "criterion_id": "C1",
+            "max_marks": 1.0,
+            "awarded_marks": 0.5,
+            "status": "PARTIAL",
+            "semantic_score": 0.7883,
+            "concept_coverage": 0.0,
+            "evidence": [
+              {
+                "sentence": "TCP establishes communication by performing a handshake between client and server before data exchange.",
+                "support": 0.7883
+              }
+            ],
+            "missing_concepts": [
+              "connection-oriented"
+            ],
+            "contradiction": false,
+            "feedback": "Identified partially in answer: \"TCP establishes communication by performing a handshake between client and server before data exchange.\". However, key required concept(s) missing or incomplete: [connection-oriented]. Suggestion: To earn full credit, explicitly explain how connection-oriented relates to 'TCP is a connection-oriented protocol.'."
+          },
+          {
+            "criterion_id": "C2",
+            "max_marks": 1.0,
+            "awarded_marks": 0.5,
+            "status": "PARTIAL",
+            "semantic_score": 0.6063,
+            "concept_coverage": 1.0,
+            "evidence": [
+              {
+                "sentence": "TCP establishes communication by performing a handshake between client and server before data exchange.",
+                "support": 0.6063
+              }
+            ],
+            "missing_concepts": [],
+            "contradiction": false,
+            "feedback": "\u26a0 Keyword stuffing detected: Rubric terms were listed without coherent semantic structure. Identified partially in answer: \"TCP establishes communication by performing a handshake between client and server before data exchange.\". The response lacks sufficient context or depth to satisfy the full rubric criterion. Suggestion: Elaborate further on 'Client sends SYN to initiate communication.' with specific explanations and step-by-step detail."
+          },
+          {
+            "criterion_id": "C3",
+            "max_marks": 1.0,
+            "awarded_marks": 1.0,
+            "status": "ENTAILED",
+            "semantic_score": 0.8294,
+            "concept_coverage": 1.0,
+            "evidence": [
+              {
+                "sentence": "Client sends SYN, server returns SYN-ACK, client acknowledges with ACK.",
+                "support": 0.8294
+              }
+            ],
+            "missing_concepts": [],
+            "contradiction": false,
+            "feedback": "Correctly identified: \"Client sends SYN, server returns SYN-ACK, client acknowledges with ACK.\" directly supports 'Server responds with SYN-ACK.'. Suggestion: Maintain this level of precision and supporting evidence in your explanations."
+          },
+          {
+            "criterion_id": "C4",
+            "max_marks": 1.0,
+            "awarded_marks": 0.5,
+            "status": "PARTIAL",
+            "semantic_score": 0.8116,
+            "concept_coverage": 1.0,
+            "evidence": [
+              {
+                "sentence": "Client sends SYN, server returns SYN-ACK, client acknowledges with ACK.",
+                "support": 0.8116
+              }
+            ],
+            "missing_concepts": [],
+            "contradiction": false,
+            "feedback": "\u26a0 Keyword stuffing detected: Rubric terms were listed without coherent semantic structure. Identified partially in answer: \"Client sends SYN, server returns SYN-ACK, client acknowledges with ACK.\". The response lacks sufficient context or depth to satisfy the full rubric criterion. Suggestion: Elaborate further on 'Client sends ACK to complete the handshake.' with specific explanations and step-by-step detail."
+          }
+        ],
+        "duplicate": {
+          "flag": false,
+          "type": "ORIGINAL",
+          "score": 0.0
+        },
+        "confidence": {
+          "score": 0.424,
+          "level": "LOW",
+          "review_required": true
+        }
+      }
+    },
+    {
+      "id": "BM_005",
+      "subject": "Biology",
+      "question": "Explain the role of chlorophyll in photosynthesis.",
+      "student_answer": "Chlorophyll is a green pigment inside chloroplasts. It absorbs sunlight to convert water and carbon dioxide into glucose and oxygen.",
+      "max_score": 4.0,
+      "human_score": 4.0,
+      "ai_score": 3.5,
+      "score_error": 0.5,
+      "normalized_error": 0.125,
+      "score_accuracy": 0.875,
+      "human_credit_band": "FULL",
+      "ai_credit_band": "FULL",
+      "credit_band_match": true,
+      "human_contradiction": false,
+      "ai_contradiction": false,
+      "contradiction_match": true,
+      "human_duplicate": false,
+      "human_duplicate_type": "ORIGINAL",
+      "ai_duplicate": false,
+      "ai_duplicate_type": "ORIGINAL",
+      "duplicate_match": true,
+      "human_reliability": "RELIABLE",
+      "ai_reliability": "RELIABLE",
+      "reliability_match": true,
+      "ai_confidence_score": 0.7415,
+      "ai_confidence_level": "MEDIUM",
+      "ai_review_required": false,
+      "internal_result": {
+        "score": 3.5,
+        "max_score": 4.0,
+        "reliability": {
+          "score": 0.89,
+          "status": "RELIABLE",
+          "issues": []
+        },
+        "criteria": [
+          {
+            "criterion_id": "C1",
+            "max_marks": 1.0,
+            "awarded_marks": 1.0,
+            "status": "ENTAILED",
+            "semantic_score": 0.9803,
+            "concept_coverage": 1.0,
+            "evidence": [
+              {
+                "sentence": "Chlorophyll is a green pigment inside chloroplasts.",
+                "support": 0.9803
+              }
+            ],
+            "missing_concepts": [],
+            "contradiction": false,
+            "feedback": "Correctly identified: \"Chlorophyll is a green pigment inside chloroplasts.\" directly supports 'Chlorophyll is a green pigment in chloroplasts.'. Suggestion: Maintain this level of precision and supporting evidence in your explanations."
+          },
+          {
+            "criterion_id": "C2",
+            "max_marks": 1.0,
+            "awarded_marks": 0.5,
+            "status": "PARTIAL",
+            "semantic_score": 0.8124,
+            "concept_coverage": 0.5,
+            "evidence": [
+              {
+                "sentence": "It absorbs sunlight to convert water and carbon dioxide into glucose and oxygen.",
+                "support": 0.8124
+              }
+            ],
+            "missing_concepts": [
+              "energy"
+            ],
+            "contradiction": false,
+            "feedback": "Identified partially in answer: \"It absorbs sunlight to convert water and carbon dioxide into glucose and oxygen.\". However, key required concept(s) missing or incomplete: [energy]. Suggestion: To earn full credit, explicitly explain how energy relates to 'Absorbs sunlight energy for photosynthesis.'."
+          },
+          {
+            "criterion_id": "C3",
+            "max_marks": 2.0,
+            "awarded_marks": 2.0,
+            "status": "ENTAILED",
+            "semantic_score": 0.8093,
+            "concept_coverage": 1.0,
+            "evidence": [
+              {
+                "sentence": "It absorbs sunlight to convert water and carbon dioxide into glucose and oxygen.",
+                "support": 0.8093
+              }
+            ],
+            "missing_concepts": [],
+            "contradiction": false,
+            "feedback": "Correctly identified: \"It absorbs sunlight to convert water and carbon dioxide into glucose and oxygen.\" directly supports 'Converts water and carbon dioxide into glucose and oxygen.'. Suggestion: Maintain this level of precision and supporting evidence in your explanations."
+          }
+        ],
+        "duplicate": {
+          "flag": false,
+          "type": "ORIGINAL",
+          "score": 0.0
+        },
+        "confidence": {
+          "score": 0.7415,
+          "level": "MEDIUM",
+          "review_required": false
+        }
+      }
+    },
+    {
+      "id": "BM_006",
+      "subject": "Biology",
+      "question": "Explain the role of chlorophyll in photosynthesis.",
+      "student_answer": "Plants use chlorophyll to absorb sunlight during photosynthesis.",
+      "max_score": 4.0,
+      "human_score": 2.0,
+      "ai_score": 1.0,
+      "score_error": 1.0,
+      "normalized_error": 0.25,
+      "score_accuracy": 0.75,
+      "human_credit_band": "PARTIAL",
+      "ai_credit_band": "PARTIAL",
+      "credit_band_match": true,
+      "human_contradiction": false,
+      "ai_contradiction": true,
+      "contradiction_match": false,
+      "human_duplicate": false,
+      "human_duplicate_type": "ORIGINAL",
+      "ai_duplicate": false,
+      "ai_duplicate_type": "ORIGINAL",
+      "duplicate_match": true,
+      "human_reliability": "RELIABLE",
+      "ai_reliability": "RELIABLE",
+      "reliability_match": true,
+      "ai_confidence_score": 0.1822,
+      "ai_confidence_level": "LOW",
+      "ai_review_required": true,
+      "internal_result": {
+        "score": 1.0,
+        "max_score": 4.0,
+        "reliability": {
+          "score": 0.9,
+          "status": "RELIABLE",
+          "issues": []
+        },
+        "criteria": [
+          {
+            "criterion_id": "C1",
+            "max_marks": 1.0,
+            "awarded_marks": 0.0,
+            "status": "UNSUPPORTED",
+            "semantic_score": 0.6911,
+            "concept_coverage": 0.0,
+            "evidence": [
+              {
+                "sentence": "Plants use chlorophyll to absorb sunlight during photosynthesis.",
+                "support": 0.6911
+              }
+            ],
+            "missing_concepts": [
+              "pigment",
+              "chloroplasts"
+            ],
+            "contradiction": false,
+            "feedback": "No supporting evidence found in the student answer for 'Chlorophyll is a green pigment in chloroplasts.'. Missing required concept(s): [pigment, chloroplasts]. Suggestion: Include a clear explanation addressing 'Chlorophyll is a green pigment in chloroplasts.' covering key concept(s): pigment, chloroplasts."
+          },
+          {
+            "criterion_id": "C2",
+            "max_marks": 1.0,
+            "awarded_marks": 1.0,
+            "status": "ENTAILED",
+            "semantic_score": 0.7813,
+            "concept_coverage": 0.5,
+            "evidence": [
+              {
+                "sentence": "Plants use chlorophyll to absorb sunlight during photosynthesis.",
+                "support": 0.7813
+              }
+            ],
+            "missing_concepts": [
+              "energy"
+            ],
+            "contradiction": false,
+            "feedback": "Correctly identified: \"Plants use chlorophyll to absorb sunlight during photosynthesis.\" directly supports 'Absorbs sunlight energy for photosynthesis.'. Suggestion: Consider incorporating additional detail on energy for maximum technical completeness."
+          },
+          {
+            "criterion_id": "C3",
+            "max_marks": 2.0,
+            "awarded_marks": 0.0,
+            "status": "CONTRADICTED",
+            "semantic_score": 0.3856,
+            "concept_coverage": 0.0,
+            "evidence": [
+              {
+                "sentence": "Plants use chlorophyll to absorb sunlight during photosynthesis.",
+                "support": 0.3856
+              }
+            ],
+            "missing_concepts": [
+              "glucose",
+              "oxygen",
+              "water",
+              "carbon dioxide"
+            ],
+            "contradiction": true,
+            "feedback": "Direct contradiction found in answer: \"Plants use chlorophyll to absorb sunlight during photosynthesis.\". Statement conflicts with factual rubric requirements for 'Converts water and carbon dioxide into glucose and oxygen.' (contradiction score: 0.82). Suggestion: Correct the contradictory statement and address required concept(s): glucose, oxygen, water, carbon dioxide."
+          }
+        ],
+        "duplicate": {
+          "flag": false,
+          "type": "ORIGINAL",
+          "score": 0.0
+        },
+        "confidence": {
+          "score": 0.1822,
+          "level": "LOW",
+          "review_required": true
+        }
+      }
+    },
+    {
+      "id": "BM_007",
+      "subject": "Biology",
+      "question": "Explain the role of chlorophyll in photosynthesis.",
+      "student_answer": "Chlorophyll reflects all sunlight and does not participate in energy absorption or photosynthesis.",
+      "max_score": 4.0,
+      "human_score": 0.0,
+      "ai_score": 0.5,
+      "score_error": 0.5,
+      "normalized_error": 0.125,
+      "score_accuracy": 0.875,
+      "human_credit_band": "ZERO",
+      "ai_credit_band": "ZERO",
+      "credit_band_match": true,
+      "human_contradiction": true,
+      "ai_contradiction": true,
+      "contradiction_match": true,
+      "human_duplicate": false,
+      "human_duplicate_type": "ORIGINAL",
+      "ai_duplicate": false,
+      "ai_duplicate_type": "ORIGINAL",
+      "duplicate_match": true,
+      "human_reliability": "RELIABLE",
+      "ai_reliability": "REVIEW_REQUIRED",
+      "reliability_match": false,
+      "ai_confidence_score": 0.0,
+      "ai_confidence_level": "LOW",
+      "ai_review_required": true,
+      "internal_result": {
+        "score": 0.5,
+        "max_score": 4.0,
+        "reliability": {
+          "score": 0.77,
+          "status": "REVIEW_REQUIRED",
+          "issues": [
+            "Rubric criterion 'Converts water and carbon dioxide into glucose and oxygen.' is missing or weakly represented in the reference answer."
+          ]
+        },
+        "criteria": [
+          {
+            "criterion_id": "C1",
+            "max_marks": 1.0,
+            "awarded_marks": 0.0,
+            "status": "UNSUPPORTED",
+            "semantic_score": 0.6384,
+            "concept_coverage": 0.0,
+            "evidence": [
+              {
+                "sentence": "Chlorophyll reflects all sunlight and does not participate in energy absorption or photosynthesis.",
+                "support": 0.6384
+              }
+            ],
+            "missing_concepts": [
+              "pigment"
+            ],
+            "contradiction": false,
+            "feedback": "No supporting evidence found in the student answer for 'Chlorophyll is a green pigment in chloroplasts.'. Missing required concept(s): [pigment]. Suggestion: Include a clear explanation addressing 'Chlorophyll is a green pigment in chloroplasts.' covering key concept(s): pigment."
+          },
+          {
+            "criterion_id": "C2",
+            "max_marks": 1.0,
+            "awarded_marks": 0.5,
+            "status": "PARTIAL",
+            "semantic_score": 0.7052,
+            "concept_coverage": 1.0,
+            "evidence": [
+              {
+                "sentence": "Chlorophyll reflects all sunlight and does not participate in energy absorption or photosynthesis.",
+                "support": 0.7052
+              }
+            ],
+            "missing_concepts": [],
+            "contradiction": false,
+            "feedback": "\u26a0 Keyword stuffing detected: Rubric terms were listed without coherent semantic structure. Identified partially in answer: \"Chlorophyll reflects all sunlight and does not participate in energy absorption or photosynthesis.\". The response lacks sufficient context or depth to satisfy the full rubric criterion. Suggestion: Elaborate further on 'Absorbs sunlight energy for photosynthesis.' with specific explanations and step-by-step detail."
+          },
+          {
+            "criterion_id": "C3",
+            "max_marks": 2.0,
+            "awarded_marks": 0.0,
+            "status": "CONTRADICTED",
+            "semantic_score": 0.3353,
+            "concept_coverage": 0.0,
+            "evidence": [
+              {
+                "sentence": "Chlorophyll reflects all sunlight and does not participate in energy absorption or photosynthesis.",
+                "support": 0.3353
+              }
+            ],
+            "missing_concepts": [
+              "glucose",
+              "oxygen"
+            ],
+            "contradiction": true,
+            "feedback": "Direct contradiction found in answer: \"Chlorophyll reflects all sunlight and does not participate in energy absorption or photosynthesis.\". Statement conflicts with factual rubric requirements for 'Converts water and carbon dioxide into glucose and oxygen.' (contradiction score: 0.82). Suggestion: Correct the contradictory statement and address required concept(s): glucose, oxygen."
+          }
+        ],
+        "duplicate": {
+          "flag": false,
+          "type": "ORIGINAL",
+          "score": 0.0
+        },
+        "confidence": {
+          "score": 0.0,
+          "level": "LOW",
+          "review_required": true
+        }
+      }
+    },
+    {
+      "id": "BM_008",
+      "subject": "General Knowledge",
+      "question": "Explain the role of chlorophyll in photosynthesis.",
+      "student_answer": "Basketball is played on a court with two teams trying to score by shooting a ball into a hoop.",
+      "max_score": 2.0,
+      "human_score": 0.0,
+      "ai_score": 0.0,
+      "score_error": 0.0,
+      "normalized_error": 0.0,
+      "score_accuracy": 1.0,
+      "human_credit_band": "ZERO",
+      "ai_credit_band": "ZERO",
+      "credit_band_match": true,
+      "human_contradiction": false,
+      "ai_contradiction": true,
+      "contradiction_match": false,
+      "human_duplicate": false,
+      "human_duplicate_type": "ORIGINAL",
+      "ai_duplicate": false,
+      "ai_duplicate_type": "ORIGINAL",
+      "duplicate_match": true,
+      "human_reliability": "RELIABLE",
+      "ai_reliability": "RELIABLE",
+      "reliability_match": true,
+      "ai_confidence_score": 0.0,
+      "ai_confidence_level": "LOW",
+      "ai_review_required": true,
+      "internal_result": {
+        "score": 0.0,
+        "max_score": 2.0,
+        "reliability": {
+          "score": 0.89,
+          "status": "RELIABLE",
+          "issues": []
+        },
+        "criteria": [
+          {
+            "criterion_id": "C1",
+            "max_marks": 2.0,
+            "awarded_marks": 0.0,
+            "status": "CONTRADICTED",
+            "semantic_score": 0.0,
+            "concept_coverage": 0.0,
+            "evidence": [
+              {
+                "sentence": "Basketball is played on a court with two teams trying to score by shooting a ball into a hoop.",
+                "support": 0.0
+              }
+            ],
+            "missing_concepts": [
+              "sunlight"
+            ],
+            "contradiction": true,
+            "feedback": "Direct contradiction found in answer: \"Basketball is played on a court with two teams trying to score by shooting a ball into a hoop.\". Statement conflicts with factual rubric requirements for 'Chlorophyll absorbs sunlight.' (contradiction score: 0.98). Suggestion: Correct the contradictory statement and address required concept(s): sunlight."
+          }
+        ],
+        "duplicate": {
+          "flag": false,
+          "type": "ORIGINAL",
+          "score": 0.0
+        },
+        "confidence": {
+          "score": 0.0,
+          "level": "LOW",
+          "review_required": true
+        }
+      }
+    },
+    {
+      "id": "BM_009",
+      "subject": "Computer Networks",
+      "question": "Explain the TCP three-way handshake.",
+      "student_answer": "SYN SYN-ACK ACK handshake SYN SYN-ACK ACK TCP.",
+      "max_score": 4.0,
+      "human_score": 1.0,
+      "ai_score": 2.0,
+      "score_error": 1.0,
+      "normalized_error": 0.25,
+      "score_accuracy": 0.75,
+      "human_credit_band": "ZERO",
+      "ai_credit_band": "PARTIAL",
+      "credit_band_match": false,
+      "human_contradiction": false,
+      "ai_contradiction": false,
+      "contradiction_match": true,
+      "human_duplicate": false,
+      "human_duplicate_type": "ORIGINAL",
+      "ai_duplicate": false,
+      "ai_duplicate_type": "ORIGINAL",
+      "duplicate_match": true,
+      "human_reliability": "RELIABLE",
+      "ai_reliability": "RELIABLE",
+      "reliability_match": true,
+      "ai_confidence_score": 0.398,
+      "ai_confidence_level": "LOW",
+      "ai_review_required": true,
+      "internal_result": {
+        "score": 2.0,
+        "max_score": 4.0,
+        "reliability": {
+          "score": 0.83,
+          "status": "RELIABLE",
+          "issues": []
+        },
+        "criteria": [
+          {
+            "criterion_id": "C1",
+            "max_marks": 4.0,
+            "awarded_marks": 2.0,
+            "status": "PARTIAL",
+            "semantic_score": 0.8392,
+            "concept_coverage": 1.0,
+            "evidence": [
+              {
+                "sentence": "SYN SYN-ACK ACK handshake SYN SYN-ACK ACK TCP.",
+                "support": 0.8392
+              }
+            ],
+            "missing_concepts": [],
+            "contradiction": false,
+            "feedback": "\u26a0 Keyword stuffing detected: Rubric terms were listed without coherent semantic structure. Identified partially in answer: \"SYN SYN-ACK ACK handshake SYN SYN-ACK ACK TCP.\". The response lacks sufficient context or depth to satisfy the full rubric criterion. Suggestion: Elaborate further on 'TCP three-way handshake uses SYN, SYN-ACK, and ACK packets.' with specific explanations and step-by-step detail."
+          }
+        ],
+        "duplicate": {
+          "flag": false,
+          "type": "ORIGINAL",
+          "score": 0.0
+        },
+        "confidence": {
+          "score": 0.398,
+          "level": "LOW",
+          "review_required": true
+        }
+      }
+    },
+    {
+      "id": "BM_010",
+      "subject": "Computer Networks",
+      "question": "Explain the TCP three-way handshake.",
+      "student_answer": "TCP is a connection-oriented protocol. The client sends a SYN packet. The server responds with SYN-ACK. Finally, the client sends ACK to complete the connection.",
+      "max_score": 4.0,
+      "human_score": 0.0,
+      "ai_score": 4.0,
+      "score_error": 4.0,
+      "normalized_error": 1.0,
+      "score_accuracy": 0.0,
+      "human_credit_band": "ZERO",
+      "ai_credit_band": "FULL",
+      "credit_band_match": false,
+      "human_contradiction": false,
+      "ai_contradiction": false,
+      "contradiction_match": true,
+      "human_duplicate": true,
+      "human_duplicate_type": "EXACT_COPY",
+      "ai_duplicate": true,
+      "ai_duplicate_type": "EXACT_COPY",
+      "duplicate_match": true,
+      "human_reliability": "RELIABLE",
+      "ai_reliability": "RELIABLE",
+      "reliability_match": true,
+      "ai_confidence_score": 0.6757,
+      "ai_confidence_level": "MEDIUM",
+      "ai_review_required": false,
+      "internal_result": {
+        "score": 4.0,
+        "max_score": 4.0,
+        "reliability": {
+          "score": 0.8,
+          "status": "RELIABLE",
+          "issues": []
+        },
+        "criteria": [
+          {
+            "criterion_id": "C1",
+            "max_marks": 4.0,
+            "awarded_marks": 4.0,
+            "status": "ENTAILED",
+            "semantic_score": 1.0,
+            "concept_coverage": 1.0,
+            "evidence": [
+              {
+                "sentence": "TCP is a connection-oriented protocol.",
+                "support": 1.0
+              }
+            ],
+            "missing_concepts": [],
+            "contradiction": false,
+            "feedback": "Correctly identified: \"TCP is a connection-oriented protocol.\" directly supports 'TCP is a connection-oriented protocol.'. Suggestion: Maintain this level of precision and supporting evidence in your explanations."
+          }
+        ],
+        "duplicate": {
+          "flag": false,
+          "type": "EXACT_COPY",
+          "score": 1.0
+        },
+        "confidence": {
+          "score": 0.6757,
+          "level": "MEDIUM",
+          "review_required": false
+        }
+      }
+    },
+    {
+      "id": "BM_011",
+      "subject": "Computer Networks",
+      "question": "Explain the TCP three-way handshake.",
+      "student_answer": "TCP is a connection-oriented protocol. Client sends SYN packet. Server replies with SYN-ACK. Finally, client sends ACK to finish connection.",
+      "max_score": 4.0,
+      "human_score": 0.0,
+      "ai_score": 4.0,
+      "score_error": 4.0,
+      "normalized_error": 1.0,
+      "score_accuracy": 0.0,
+      "human_credit_band": "ZERO",
+      "ai_credit_band": "FULL",
+      "credit_band_match": false,
+      "human_contradiction": false,
+      "ai_contradiction": false,
+      "contradiction_match": true,
+      "human_duplicate": true,
+      "human_duplicate_type": "NEAR_DUPLICATE",
+      "ai_duplicate": true,
+      "ai_duplicate_type": "NEAR_DUPLICATE",
+      "duplicate_match": true,
+      "human_reliability": "RELIABLE",
+      "ai_reliability": "RELIABLE",
+      "reliability_match": true,
+      "ai_confidence_score": 0.7107,
+      "ai_confidence_level": "MEDIUM",
+      "ai_review_required": false,
+      "internal_result": {
+        "score": 4.0,
+        "max_score": 4.0,
+        "reliability": {
+          "score": 0.8,
+          "status": "RELIABLE",
+          "issues": []
+        },
+        "criteria": [
+          {
+            "criterion_id": "C1",
+            "max_marks": 4.0,
+            "awarded_marks": 4.0,
+            "status": "ENTAILED",
+            "semantic_score": 1.0,
+            "concept_coverage": 1.0,
+            "evidence": [
+              {
+                "sentence": "TCP is a connection-oriented protocol.",
+                "support": 1.0
+              }
+            ],
+            "missing_concepts": [],
+            "contradiction": false,
+            "feedback": "Correctly identified: \"TCP is a connection-oriented protocol.\" directly supports 'TCP is a connection-oriented protocol.'. Suggestion: Maintain this level of precision and supporting evidence in your explanations."
+          }
+        ],
+        "duplicate": {
+          "flag": false,
+          "type": "NEAR_DUPLICATE",
+          "score": 0.86
+        },
+        "confidence": {
+          "score": 0.7107,
+          "level": "MEDIUM",
+          "review_required": false
+        }
+      }
+    },
+    {
+      "id": "BM_012",
+      "subject": "Quantum Physics",
+      "question": "What is quantum entanglement?",
+      "student_answer": "Quantum entanglement is a phenomenon where particles remain connected so that actions performed on one affect the other.",
+      "max_score": 2.0,
+      "human_score": 0.0,
+      "ai_score": 0.0,
+      "score_error": 0.0,
+      "normalized_error": 0.0,
+      "score_accuracy": 1.0,
+      "human_credit_band": "ZERO",
+      "ai_credit_band": "ZERO",
+      "credit_band_match": true,
+      "human_contradiction": false,
+      "ai_contradiction": false,
+      "contradiction_match": true,
+      "human_duplicate": false,
+      "human_duplicate_type": "ORIGINAL",
+      "ai_duplicate": false,
+      "ai_duplicate_type": "ORIGINAL",
+      "duplicate_match": true,
+      "human_reliability": "REFERENCE_REVIEW_REQUIRED",
+      "ai_reliability": "REFERENCE_REVIEW_REQUIRED",
+      "reliability_match": true,
+      "ai_confidence_score": 0.0,
+      "ai_confidence_level": "LOW",
+      "ai_review_required": true,
+      "internal_result": {
+        "score": 0.0,
+        "max_score": 2.0,
+        "reliability": {
+          "score": 0.0,
+          "status": "REFERENCE_REVIEW_REQUIRED",
+          "issues": [
+            "Low semantic alignment between question and reference answer (score: 0.11).",
+            "Rubric criterion 'Quantum entanglement describes correlated particle states.' is missing or weakly represented in the reference answer."
+          ]
+        },
+        "criteria": [
+          {
+            "criterion_id": "C1",
+            "max_marks": 2.0,
+            "awarded_marks": 0.0,
+            "status": "REFERENCE_REVIEW_REQUIRED",
+            "semantic_score": 0.0,
+            "concept_coverage": 0.0,
+            "evidence": [],
+            "missing_concepts": [
+              "quantum",
+              "entanglement"
+            ],
+            "contradiction": false,
+            "feedback": "Evaluation suspended: Reference answer or rubric failed internal reliability checks."
+          }
+        ],
+        "duplicate": {
+          "flag": false,
+          "type": "ORIGINAL",
+          "score": 0.0
+        },
+        "confidence": {
+          "score": 0.0,
+          "level": "LOW",
+          "review_required": true
+        }
+      }
+    }
+  ]
+}

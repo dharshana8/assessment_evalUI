@@ -45,69 +45,21 @@ export const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) =
   // Parse Live Preview of Test Email
   const parsedPreview = parseEmailIdentity(testEmail);
 
-  // Mock User Database
-  const [users] = useState<UserRecord[]>([
-    {
-      id: 'usr-1',
-      name: 'Dr. Dharshana S',
-      email: 'dharshana@sece.ac.in',
-      role: 'ORG_ADMIN',
-      department: 'Computer Science & Business Systems',
-      status: 'Active',
-      parsedAutomatically: true,
-    },
-    {
-      id: 'usr-2',
-      name: 'Prof. Anitha K',
-      email: 'anitha.k@sece.ac.in',
-      role: 'STAFF',
-      department: 'Computer Science & Business Systems',
-      status: 'Active',
-      parsedAutomatically: true,
-    },
-    {
-      id: 'usr-3',
-      name: 'Ananya Sharma',
-      email: 'ananya.s2024csbs@sece.ac.in',
-      role: 'STUDENT',
-      department: 'Computer Science & Business Systems',
-      batch: '2024',
-      student_id: '732924CSBS001',
-      status: 'Active',
-      parsedAutomatically: true,
-    },
-    {
-      id: 'usr-4',
-      name: 'Rohan Kumar',
-      email: 'rohan.k2024csbs@sece.ac.in',
-      role: 'STUDENT',
-      department: 'Computer Science & Business Systems',
-      batch: '2024',
-      student_id: '732924CSBS002',
-      status: 'Active',
-      parsedAutomatically: true,
-    },
-    {
-      id: 'usr-5',
-      name: 'Kavya Raman',
-      email: 'kavya.r2023aids@sece.ac.in',
-      role: 'STUDENT',
-      department: 'Artificial Intelligence & Data Science',
-      batch: '2023',
-      student_id: '732923AIDS015',
-      status: 'Active',
-      parsedAutomatically: true,
-    },
-    {
-      id: 'usr-6',
-      name: 'Dr. Rajesh V',
-      email: 'rajesh.v@sece.ac.in',
-      role: 'STAFF',
-      department: 'Artificial Intelligence & Data Science',
-      status: 'Active',
-      parsedAutomatically: false,
-    },
-  ]);
+  // User Database (loaded dynamically or initialized with current user)
+  const [users] = useState<UserRecord[]>(() => {
+    if (!currentUser) return [];
+    return [
+      {
+        id: currentUser.id || 'usr-1',
+        name: currentUser.name || 'Current User',
+        email: currentUser.email || '',
+        role: currentUser.role || 'ORG_ADMIN',
+        department: currentUser.department || 'Computer Science & Business Systems',
+        status: 'Active',
+        parsedAutomatically: true,
+      }
+    ];
+  });
 
   // Filter Users
   const filteredUsers = users.filter((u) => {

@@ -1,0 +1,13 @@
+id,subject,question,max_score,human_score,ai_score,score_error,normalized_error,human_credit_band,ai_credit_band,credit_band_match,human_contradiction,ai_contradiction,human_duplicate,ai_duplicate,human_reliability,ai_reliability,ai_confidence_score,ai_confidence_level,ai_review_required
+BM_001,Computer Networks,Explain the TCP three-way handshake.,4.0,4.0,1.0,3.0,0.75,FULL,PARTIAL,False,False,True,False,False,RELIABLE,RELIABLE,0.0536,LOW,True
+BM_002,Computer Networks,Explain the TCP three-way handshake.,4.0,0.0,0.0,0.0,0.0,ZERO,ZERO,True,True,False,False,False,RELIABLE,REFERENCE_REVIEW_REQUIRED,0.0,LOW,True
+BM_003,Computer Networks,Explain the TCP three-way handshake.,4.0,2.0,2.0,0.0,0.0,PARTIAL,PARTIAL,True,False,True,False,False,RELIABLE,RELIABLE,0.3212,LOW,True
+BM_004,Computer Networks,Explain the TCP three-way handshake.,4.0,4.0,2.5,1.5,0.375,FULL,PARTIAL,False,False,False,False,False,RELIABLE,RELIABLE,0.424,LOW,True
+BM_005,Biology,Explain the role of chlorophyll in photosynthesis.,4.0,4.0,3.5,0.5,0.125,FULL,FULL,True,False,False,False,False,RELIABLE,RELIABLE,0.7415,MEDIUM,False
+BM_006,Biology,Explain the role of chlorophyll in photosynthesis.,4.0,2.0,1.0,1.0,0.25,PARTIAL,PARTIAL,True,False,True,False,False,RELIABLE,RELIABLE,0.1822,LOW,True
+BM_007,Biology,Explain the role of chlorophyll in photosynthesis.,4.0,0.0,0.5,0.5,0.125,ZERO,ZERO,True,True,True,False,False,RELIABLE,REVIEW_REQUIRED,0.0,LOW,True
+BM_008,General Knowledge,Explain the role of chlorophyll in photosynthesis.,2.0,0.0,0.0,0.0,0.0,ZERO,ZERO,True,False,True,False,False,RELIABLE,RELIABLE,0.0,LOW,True
+BM_009,Computer Networks,Explain the TCP three-way handshake.,4.0,1.0,2.0,1.0,0.25,ZERO,PARTIAL,False,False,False,False,False,RELIABLE,RELIABLE,0.398,LOW,True
+BM_010,Computer Networks,Explain the TCP three-way handshake.,4.0,0.0,4.0,4.0,1.0,ZERO,FULL,False,False,False,True,True,RELIABLE,RELIABLE,0.6757,MEDIUM,False
+BM_011,Computer Networks,Explain the TCP three-way handshake.,4.0,0.0,4.0,4.0,1.0,ZERO,FULL,False,False,False,True,True,RELIABLE,RELIABLE,0.7107,MEDIUM,False
+BM_012,Quantum Physics,What is quantum entanglement?,2.0,0.0,0.0,0.0,0.0,ZERO,ZERO,True,False,False,False,False,REFERENCE_REVIEW_REQUIRED,REFERENCE_REVIEW_REQUIRED,0.0,LOW,True

@@ -42,8 +42,36 @@ class NLIEngine:
         }
 
     def evaluate_sentences(self, hypothesis: str, premises: List[str]) -> List[Dict[str, float]]:
-        """Batch evaluate hypothesis against multiple premise sentences."""
+        """Batch evaluate hypothesis against multiple premise sentences in a single tensor forward pass."""
+        if not premises or not hypothesis:
+            return [{"entailment": 0.0, "contradiction": 0.0, "neutral": 1.0} for _ in premises]
+
+        hypotheses = [hypothesis] * len(premises)
+        features = self.tokenizer(
+            premises,
+            hypotheses,
+            padding=True,
+            truncation=True,
+            max_length=256,
+            return_tensors="pt"
+        )
+
+        with torch.no_grad():
+            logits = self.model(**features).logits
+            probs_batch = torch.softmax(logits, dim=-1)
+
+        contra_idx = self.label_map.get("contradiction", 0)
+        entail_idx = self.label_map.get("entailment", 1)
+        neutral_idx = self.label_map.get("neutral", 2)
+
         results = []
-        for premise in premises:
-            results.append(self.evaluate_pair(premise, hypothesis))
+        for i in range(len(premises)):
+            probs = probs_batch[i]
+            results.append({
+                "entailment": float(probs[entail_idx].item()),
+                "contradiction": float(probs[contra_idx].item()),
+                "neutral": float(probs[neutral_idx].item())
+            })
+
         return results
+

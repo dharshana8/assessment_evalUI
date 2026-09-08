@@ -35,23 +35,23 @@ def run_tests():
     ]
 
     test_cases = {
-        "Case A — Correct": (
+        "Case A - Correct": (
             "TCP is a connection-oriented protocol. The client sends a SYN packet. "
             "The server responds with SYN-ACK. Finally, the client sends ACK to complete the connection."
         ),
-        "Case B — Contradiction": (
+        "Case B - Contradiction": (
             "TCP is not a connection-oriented protocol and it does not use a three-way handshake."
         ),
-        "Case C — Partial": (
+        "Case C - Partial": (
             "TCP is connection-oriented. The client sends SYN and receives SYN-ACK."
         ),
-        "Case D — Paraphrased": (
+        "Case D - Paraphrased": (
             "TCP establishes communication by performing a handshake between the client and server before data exchange."
         ),
-        "Case E — Off Topic": (
+        "Case E - Off Topic": (
             "Cricket is played between two teams. Players score runs by hitting the ball."
         ),
-        "Case F — Keyword Stuffing": (
+        "Case F - Keyword Stuffing": (
             "TCP SYN SYN-ACK ACK HTTP UDP IP TCP SYN ACK connection-oriented."
         )
     }
@@ -69,7 +69,7 @@ def run_tests():
         print(f"Summary: {result['diagnostic_summary']}")
         
         for c in result['criteria']:
-            status_symbol = "✓" if c['status'] == "ENTAILED" else ("⚠" if c['status'] == "PARTIAL" else "✗")
+            status_symbol = "[OK]" if c['status'] == "ENTAILED" else ("[WARN]" if c['status'] == "PARTIAL" else "[FAIL]")
             ev_str = f" [Sentence {c['evidence']['sentence_id']}: '{c['evidence']['text']}']" if c['evidence'] else ""
             print(f"  {status_symbol} {c['criterion_id']} ({c['description']}): {c['awarded_marks']}/{c['max_marks']} | Status: {c['status']} | ContraProb: {c['contradiction_probability']} | Stuffing: {c['keyword_stuffing_detected']}{ev_str}")
 
