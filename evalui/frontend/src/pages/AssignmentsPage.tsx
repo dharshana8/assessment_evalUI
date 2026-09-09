@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Plus, BookOpen, ChevronRight, Search, FileText, Calendar } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, BookOpen, ChevronRight, Search, FileText, Calendar, Users, Eye, Edit3 } from 'lucide-react';
 import { Assignment } from '../types/evaluation';
+import { api } from '../services/api';
 
 interface AssignmentsPageProps {
   assignments: Assignment[];
@@ -17,6 +18,26 @@ export const AssignmentsPage: React.FC<AssignmentsPageProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSubject, setSelectedSubject] = useState<string>('ALL');
+  const [submissionCounts, setSubmissionCounts] = useState<Record<string, number>>({});
+  const [selectedDetailsAssignment, setSelectedDetailsAssignment] = useState<Assignment | null>(null);
+
+  useEffect(() => {
+    const fetchSubmissionCounts = async () => {
+      try {
+        const subs = await api.listSubmissions();
+        const counts: Record<string, number> = {};
+        (subs || []).forEach((s: any) => {
+          if (s.assignment_id) {
+            counts[s.assignment_id] = (counts[s.assignment_id] || 0) + 1;
+          }
+        });
+        setSubmissionCounts(counts);
+      } catch (e) {
+        console.error('Failed to load submission counts:', e);
+      }
+    };
+    fetchSubmissionCounts();
+  }, [assignments]);
 
   // Extract unique subjects
   const subjects = ['ALL', ...Array.from(new Set(assignments.map(a => a.subject).filter(Boolean)))];
@@ -108,63 +129,148 @@ export const AssignmentsPage: React.FC<AssignmentsPageProps> = ({
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filteredAssignments.map((asm) => (
-              <div
-                key={asm.id}
-                className="bg-white p-6 rounded-3xl border border-forest-100 hover:border-mint-500 shadow-card hover:shadow-card-hover transition-all space-y-4 flex flex-col justify-between group"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-lg bg-mint-50 text-mint-800 border border-mint-200">
-                      {asm.subject}
-                    </span>
-                    <span className="text-xs font-mono font-bold text-forest-700">
-                      Max Marks: {asm.total_marks}
-                    </span>
+            {filteredAssignments.map((asm) => {
+              const subCount = submissionCounts[asm.id] || 0;
+
+              return (
+                <div
+                  key={asm.id}
+                  className="bg-white p-6 rounded-3xl border border-forest-100 hover:border-mint-500 shadow-card hover:shadow-card-hover transition-all space-y-4 flex flex-col justify-between group"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-lg bg-mint-50 text-mint-800 border border-mint-200">
+                        {asm.subject}
+                      </span>
+                      <span className="text-xs font-mono font-bold text-forest-700">
+                        Max Marks: {asm.total_marks}
+                      </span>
+                    </div>
+
+                    <h4 className="text-heading font-display font-bold text-forest-900 group-hover:text-mint-700 transition-colors">
+                      {asm.title}
+                    </h4>
+
+                    <p className="text-xs text-forest-600 line-clamp-3 font-sans">
+                      {asm.question}
+                    </p>
                   </div>
 
-                  <h4 className="text-heading font-display font-bold text-forest-900 group-hover:text-mint-700 transition-colors">
-                    {asm.title}
-                  </h4>
+                  <div className="pt-3 border-t border-forest-100 flex flex-wrap items-center justify-between gap-2 text-xs font-sans text-forest-500">
+                    <div className="flex items-center space-x-2 font-mono text-[11px]">
+                      <span className="bg-forest-50 px-2 py-0.5 rounded border border-forest-200 text-forest-800 font-semibold">
+                        {asm.rubric_criteria?.length || 0} Criteria
+                      </span>
+                      <span className="bg-purple-50 text-purple-900 font-bold px-2 py-0.5 rounded border border-purple-200">
+                        {subCount} Submissions
+                      </span>
+                    </div>
 
-                  <p className="text-xs text-forest-600 line-clamp-3 font-sans">
-                    {asm.question}
-                  </p>
-                </div>
-
-                <div className="pt-3 border-t border-forest-100 flex items-center justify-between text-xs font-sans text-forest-500">
-                  <div className="flex items-center space-x-3 font-mono text-[11px]">
-                    <span className="bg-forest-50 px-2 py-0.5 rounded border border-forest-200">
-                      {asm.rubric_criteria?.length || 0} Criteria
-                    </span>
-                    <span className="text-emerald-700 font-semibold px-2 py-0.5 rounded bg-emerald-50 border border-emerald-200">
-                      Published
-                    </span>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => onSelectAssignment(asm)}
-                      className="px-3 py-1.5 rounded-xl bg-forest-50 hover:bg-forest-100 text-forest-900 text-xs font-semibold font-display transition-colors border border-forest-200"
-                    >
-                      View Details
-                    </button>
-                    {onNavigateToSubmissions && (
+                    <div className="flex items-center space-x-2">
                       <button
-                        onClick={() => onNavigateToSubmissions(asm)}
-                        className="px-3 py-1.5 rounded-xl bg-forest-900 hover:bg-forest-800 text-white text-xs font-semibold font-display transition-colors shadow-sm flex items-center space-x-1"
+                        onClick={() => setSelectedDetailsAssignment(asm)}
+                        className="px-3 py-1.5 rounded-xl bg-forest-50 hover:bg-forest-100 text-forest-900 text-xs font-semibold font-display transition-colors border border-forest-200 flex items-center space-x-1"
                       >
-                        <span>Submissions</span>
-                        <ChevronRight className="w-3.5 h-3.5" />
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>View/Edit</span>
                       </button>
-                    )}
+                      {onNavigateToSubmissions && (
+                        <button
+                          onClick={() => onNavigateToSubmissions(asm)}
+                          className="px-3 py-1.5 rounded-xl bg-forest-900 hover:bg-forest-800 text-white text-xs font-semibold font-display transition-colors shadow-sm flex items-center space-x-1"
+                        >
+                          <span>Submissions</span>
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
+
+      {/* View / Edit Assignment Modal */}
+      {selectedDetailsAssignment && (
+        <div className="fixed inset-0 z-50 bg-forest-950/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-white rounded-3xl p-6 md:p-8 max-w-2xl w-full border border-forest-100 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto font-sans">
+            <div className="flex items-center justify-between border-b border-forest-100 pb-4">
+              <div>
+                <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-lg bg-mint-50 text-mint-800 border border-mint-200">
+                  {selectedDetailsAssignment.subject}
+                </span>
+                <h3 className="text-xl font-display font-bold text-forest-900 mt-2">
+                  {selectedDetailsAssignment.title}
+                </h3>
+              </div>
+              <button
+                onClick={() => setSelectedDetailsAssignment(null)}
+                className="text-forest-400 hover:text-forest-800 text-sm font-mono font-bold p-2"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs font-sans text-forest-800">
+              <div>
+                <strong className="block font-display font-bold text-forest-900 mb-1">Descriptive Question:</strong>
+                <p className="bg-forest-50/60 p-3.5 rounded-xl border border-forest-100 leading-relaxed font-mono">
+                  {selectedDetailsAssignment.question}
+                </p>
+              </div>
+
+              {selectedDetailsAssignment.reference_answer && (
+                <div>
+                  <strong className="block font-display font-bold text-forest-900 mb-1 text-amber-900">
+                    Instructor Reference Answer (Private):
+                  </strong>
+                  <p className="bg-amber-50/60 text-amber-950 p-3.5 rounded-xl border border-amber-200/60 leading-relaxed font-mono">
+                    {selectedDetailsAssignment.reference_answer}
+                  </p>
+                </div>
+              )}
+
+              <div>
+                <strong className="block font-display font-bold text-forest-900 mb-2">
+                  Rubric Criteria ({selectedDetailsAssignment.rubric_criteria?.length || 0}) • Total: {selectedDetailsAssignment.total_marks} Marks:
+                </strong>
+                <div className="space-y-2">
+                  {(selectedDetailsAssignment.rubric_criteria || []).map((c, idx) => (
+                    <div key={idx} className="p-3 bg-forest-50/40 rounded-xl border border-forest-100 flex items-center justify-between">
+                      <span className="font-medium text-forest-900 flex-1">{idx + 1}. {c.description}</span>
+                      <span className="font-mono font-bold text-forest-700 ml-4">{c.max_marks} Marks</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-forest-100 flex items-center justify-end space-x-3">
+              <button
+                onClick={() => setSelectedDetailsAssignment(null)}
+                className="px-4 py-2 rounded-xl bg-forest-100 hover:bg-forest-200 text-forest-900 font-display font-semibold text-xs transition-colors"
+              >
+                Close
+              </button>
+              {onNavigateToSubmissions && (
+                <button
+                  onClick={() => {
+                    const asm = selectedDetailsAssignment;
+                    setSelectedDetailsAssignment(null);
+                    onNavigateToSubmissions(asm);
+                  }}
+                  className="px-4 py-2 rounded-xl bg-forest-900 hover:bg-forest-800 text-white font-display font-semibold text-xs transition-colors flex items-center space-x-1.5"
+                >
+                  <span>View Submissions</span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

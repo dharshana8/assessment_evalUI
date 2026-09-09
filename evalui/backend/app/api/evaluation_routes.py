@@ -36,6 +36,13 @@ def trigger_evaluation(payload: EvaluateRequest, db: Session = Depends(get_db)):
     if not assignment:
         raise HTTPException(status_code=404, detail="Assignment not found")
 
+    # Clean existing evaluation if re-evaluating this exact submission
+    existing_evals = db.query(Evaluation).filter(Evaluation.submission_id == submission.id).all()
+    for old_e in existing_evals:
+        db.delete(old_e)
+    if existing_evals:
+        db.flush()
+
     # Format criteria for evaluation engine
     rubric_list = []
     for c in assignment.rubric_criteria:

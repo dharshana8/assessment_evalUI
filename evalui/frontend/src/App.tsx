@@ -59,48 +59,64 @@ export const App: React.FC = () => {
 
   // Sync URL path and validate Role Access Guards on load/refresh
   useEffect(() => {
-    const path = window.location.pathname;
-    const normRole = getNormalizedRole(currentUser);
+    const syncRouteAndData = async () => {
+      const path = window.location.pathname;
+      const normRole = getNormalizedRole(currentUser);
 
-    if (!currentUser || !normRole) {
-      if (path !== '/login') {
-        window.history.replaceState(null, '', '/login');
+      if (!currentUser || !normRole) {
+        if (path !== '/login') {
+          window.history.replaceState(null, '', '/login');
+        }
+        return;
       }
-      return;
-    }
 
-    // Role Route Guards
-    if (path.startsWith('/tutor') && normRole !== 'TUTOR') {
-      window.history.replaceState(null, '', getDefaultPathForRole(normRole));
-      setActiveTab('dashboard');
-      return;
-    }
-    if (path.startsWith('/student') && normRole !== 'STUDENT') {
-      window.history.replaceState(null, '', getDefaultPathForRole(normRole));
-      setActiveTab('dashboard');
-      return;
-    }
-    if (path.startsWith('/admin') && normRole !== 'ADMIN') {
-      window.history.replaceState(null, '', getDefaultPathForRole(normRole));
-      setActiveTab('dashboard');
-      return;
-    }
+      // Role Route Guards
+      if (path.startsWith('/tutor') && normRole !== 'TUTOR') {
+        window.history.replaceState(null, '', getDefaultPathForRole(normRole));
+        setActiveTab('dashboard');
+        return;
+      }
+      if (path.startsWith('/student') && normRole !== 'STUDENT') {
+        window.history.replaceState(null, '', getDefaultPathForRole(normRole));
+        setActiveTab('dashboard');
+        return;
+      }
+      if (path.startsWith('/admin') && normRole !== 'ADMIN') {
+        window.history.replaceState(null, '', getDefaultPathForRole(normRole));
+        setActiveTab('dashboard');
+        return;
+      }
 
-    if (path === '/' || path === '/login') {
-      window.history.replaceState(null, '', getDefaultPathForRole(normRole));
-      setActiveTab('dashboard');
-      return;
-    }
+      if (path === '/' || path === '/login') {
+        window.history.replaceState(null, '', getDefaultPathForRole(normRole));
+        setActiveTab('dashboard');
+        return;
+      }
 
-    const parts = path.split('/').filter(Boolean);
-    if (parts[1]) {
-      setActiveTab(parts[1]);
-    }
+      const parts = path.split('/').filter(Boolean);
+      const tab = parts[1] || 'dashboard';
+      setActiveTab(tab);
+
+      // Check if URL has evaluation_id parameter
+      const params = new URLSearchParams(window.location.search);
+      const evalId = params.get('eval_id') || (parts[2] ? parts[2] : null);
+
+      if ((tab === 'result' || tab === 'results') && evalId) {
+        try {
+          const evalData = await api.getEvaluation(evalId);
+          setEvaluationResult(evalData);
+        } catch (e) {
+          console.error('Failed to load evaluation by ID:', e);
+        }
+      }
+    };
+
+    syncRouteAndData();
   }, [currentUser]);
 
   // Listen for browser Back/Forward navigation
   useEffect(() => {
-    const handlePopState = () => {
+    const handlePopState = async () => {
       const path = window.location.pathname;
       const saved = localStorage.getItem('evalui_user');
       const user = saved ? JSON.parse(saved) : null;
@@ -130,7 +146,20 @@ export const App: React.FC = () => {
       }
 
       const parts = path.split('/').filter(Boolean);
-      setActiveTab(parts[1] || 'dashboard');
+      const tab = parts[1] || 'dashboard';
+      setActiveTab(tab);
+
+      const params = new URLSearchParams(window.location.search);
+      const evalId = params.get('eval_id') || (parts[2] ? parts[2] : null);
+
+      if ((tab === 'result' || tab === 'results') && evalId) {
+        try {
+          const evalData = await api.getEvaluation(evalId);
+          setEvaluationResult(evalData);
+        } catch (e) {
+          console.error('Failed to load evaluation on popstate:', e);
+        }
+      }
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -231,7 +260,11 @@ export const App: React.FC = () => {
   // Handle Evaluation Complete
   const handleEvaluationComplete = (result: EvaluationResultData) => {
     setEvaluationResult(result);
-    handleNavigate('result');
+    const normRole = getNormalizedRole(currentUser);
+    const prefix = normRole === 'ADMIN' ? '/admin/' : normRole === 'STUDENT' ? '/student/' : '/tutor/';
+    const targetPath = `${prefix}result?eval_id=${result.evaluation_id}`;
+    window.history.pushState(null, '', targetPath);
+    setActiveTab('result');
   };
 
   // If user is not logged in or invalid role, show LoginPage (Protected route guard)
