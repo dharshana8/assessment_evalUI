@@ -36,7 +36,13 @@ export const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
         </div>
 
         <button
-          onClick={() => setShowBuilder(!showBuilder)}
+          onClick={() => {
+            if (onNavigateToCreate) {
+              onNavigateToCreate();
+            } else {
+              setShowBuilder(!showBuilder);
+            }
+          }}
           className="px-4 py-2.5 rounded-xl bg-forest-900 hover:bg-forest-800 text-white font-display font-semibold text-label shadow-md flex items-center space-x-1.5 transition-all"
         >
           <Plus className="w-4 h-4" />

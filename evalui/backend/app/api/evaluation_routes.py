@@ -12,6 +12,7 @@ from app.services.duplicate_engine import DuplicateEngine
 from app.services.confidence_engine import ConfidenceEngine
 from app.services.report_service import ReportService
 from app.services.text_processor import TextProcessor
+from app.services.feedback_engine import FeedbackEngine
 
 router = APIRouter(prefix="/evaluations", tags=["Evaluations"])
 
@@ -70,6 +71,7 @@ def trigger_evaluation(payload: EvaluateRequest, db: Session = Depends(get_db)):
         student_text=submission.content,
         rubric_criteria=rubric_list,
         question=assignment.question,
+        reference_answer=assignment.reference_answer,
         duplicate_score=dup_result["duplicate_score"],
         duplicate_type=dup_result["duplicate_type"]
     )

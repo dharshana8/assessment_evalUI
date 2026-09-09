@@ -77,5 +77,5 @@ def list_submissions(
         query = query.filter(Submission.assignment_id == assignment_id)
     if student_id:
         query = query.filter(Submission.student_id == student_id)
-    return query.order_by(Submission.created_at.desc()).all()
+    return query.order_by(Submission.submitted_at.desc()).all()
 

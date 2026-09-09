@@ -24,6 +24,7 @@ class Assignment(Base):
     title = Column(String(200), nullable=False)
     subject = Column(String(100), nullable=False)
     question = Column(Text, nullable=False)
+    reference_answer = Column(Text, nullable=True)
     total_marks = Column(Float, nullable=False)
     created_by = Column(String(36), ForeignKey("users.id"), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)

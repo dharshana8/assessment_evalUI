@@ -40,32 +40,33 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
     if (role === 'ORG_ADMIN' || role === 'PLATFORM_ADMIN') {
       return [
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-        { id: 'users', label: 'Users Management', icon: Users },
-        { id: 'assignments', label: 'Assignments Data', icon: BookOpen },
-        { id: 'evaluations', label: 'Evaluation Monitoring', icon: CheckSquare },
-        { id: 'settings', label: 'System Health & Settings', icon: Settings },
-        { id: 'profile', label: 'Profile', icon: UserIcon },
+        { id: 'users', label: 'Users', icon: Users },
+        { id: 'assignments', label: 'Assignments', icon: BookOpen },
+        { id: 'settings', label: 'System Monitoring', icon: Settings },
+        { id: 'reports', label: 'Reports', icon: BarChart3 },
+        { id: 'profile', label: 'Settings', icon: UserIcon },
       ];
     }
 
     if (role === 'STUDENT') {
       return [
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-        { id: 'my-assignments', label: 'My Assignments', icon: BookOpen },
-        { id: 'submissions', label: 'Submit Answer', icon: Send },
-        { id: 'results', label: 'My Results', icon: CheckSquare },
-        { id: 'profile', label: 'Profile & Settings', icon: UserIcon },
+        { id: 'my-assignments', label: 'Assignments', icon: BookOpen },
+        { id: 'submissions', label: 'My Submissions', icon: Send },
+        { id: 'results', label: 'Results', icon: CheckSquare },
+        { id: 'profile', label: 'Profile', icon: UserIcon },
+        { id: 'settings', label: 'Settings', icon: Settings },
       ];
     }
 
-    // STAFF / TUTOR Navigation Workflow
+    // FACULTY / TUTOR Navigation Workflow
     return [
       { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
       { id: 'assignments', label: 'Assignments', icon: BookOpen },
       { id: 'create-assignment', label: 'Create Assignment', icon: PlusCircle },
       { id: 'evaluations', label: 'Submissions & Evaluations', icon: Send },
       { id: 'reports', label: 'Reports', icon: BarChart3 },
-      { id: 'settings', label: 'Settings & Profile', icon: Settings },
+      { id: 'profile', label: 'Profile & Settings', icon: Settings },
     ];
   };
 

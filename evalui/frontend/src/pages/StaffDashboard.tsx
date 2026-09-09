@@ -1,21 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { 
   FileText, 
-  Users, 
+  Clock, 
   CheckCircle2, 
   TrendingUp, 
   Plus, 
   Calendar, 
-  MoreHorizontal, 
-  ShieldCheck, 
-  BarChart2, 
-  Cpu, 
-  HelpCircle,
-  Headphones,
-  ArrowUpRight,
-  Send,
-  Download,
-  BookOpen
+  ArrowUpRight, 
+  Send, 
+  BookOpen,
+  AlertCircle
 } from 'lucide-react';
 import { Assignment, EvaluationResultData } from '../types/evaluation';
 import { User } from '../types/auth';
@@ -30,7 +24,7 @@ interface StaffDashboardProps {
 
 export const StaffDashboard: React.FC<StaffDashboardProps> = ({
   user,
-  assignments,
+  assignments = [],
   onSelectAssignment,
   onNavigate
 }) => {
@@ -59,9 +53,13 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
     loadDashboardData();
   }, []);
 
+  // Compute exact metrics from backend APIs
   const totalAssignmentsCount = assignments.length;
-  const totalSubmissionsCount = submissions.length;
   const totalEvaluatedCount = evaluations.length;
+
+  const evaluatedSubmissionIds = new Set(evaluations.map(e => e.submission_id));
+  const pendingSubmissions = submissions.filter(s => !evaluatedSubmissionIds.has(s.id));
+  const pendingEvaluationsCount = pendingSubmissions.length;
 
   const avgClassScore = totalEvaluatedCount > 0 
     ? Math.round(evaluations.reduce((acc, curr) => acc + (curr.percentage || 0), 0) / totalEvaluatedCount)
@@ -85,22 +83,24 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
             <span>👋</span>
           </h1>
           <p className="text-body font-sans text-slate-500 mt-0.5">
-            Overview of teaching, descriptive assessments, and real-time AI evaluation status.
+            Real-time assessment overview and pending AI evaluation queue.
           </p>
         </div>
 
-        <div className="flex items-center space-x-4">
-          <div className="hidden lg:block bg-white border border-canvas-border px-4 py-2 rounded-2xl shadow-card text-caption text-slate-600 italic">
-            "Better assessments create brighter learners." <span className="text-forest-700 font-semibold font-sans">— EvalUI</span>
-          </div>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={() => onNavigate('create-assignment')}
+            className="px-4 py-2.5 rounded-xl bg-forest-900 hover:bg-forest-800 text-white font-display font-semibold text-xs shadow-md flex items-center space-x-1.5 transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create New Assignment</span>
+          </button>
 
           <div className="bg-white border border-canvas-border px-4 py-2 rounded-2xl shadow-card flex items-center space-x-3 text-left">
             <div className="p-2 rounded-xl bg-mint-50 text-forest-700">
-              <Calendar className="w-5 h-5" />
+              <Calendar className="w-4 h-4" />
             </div>
-            <div>
-              <div className="text-body font-display font-bold text-slate-900">{todayStr}</div>
-            </div>
+            <div className="text-xs font-display font-bold text-slate-900">{todayStr}</div>
           </div>
         </div>
       </div>
@@ -108,7 +108,7 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
       {/* Top 4 Stat Cards Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         
-        {/* Stat Card 1: Total Assignments */}
+        {/* 1. Total Assignments */}
         <div className="bg-white border border-canvas-border rounded-3xl p-5 shadow-card hover:shadow-panel transition-all group flex justify-between items-start">
           <div>
             <div className="p-3 rounded-2xl bg-mint-50 text-forest-700 w-fit mb-3">
@@ -122,44 +122,44 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
           </button>
         </div>
 
-        {/* Stat Card 2: Submissions */}
-        <div className="bg-white border border-canvas-border rounded-3xl p-5 shadow-card hover:shadow-panel transition-all group flex justify-between items-start">
-          <div>
-            <div className="p-3 rounded-2xl bg-blue-50 text-blue-600 w-fit mb-3">
-              <Users className="w-6 h-6" />
-            </div>
-            <div className="text-display-lg font-display font-bold text-slate-900">{totalSubmissionsCount}</div>
-            <div className="text-body font-sans font-medium text-slate-600">Student Submissions</div>
-          </div>
-          <button onClick={() => onNavigate('evaluations')} className="text-slate-400 group-hover:text-blue-600 p-1">
-            <ArrowUpRight className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Stat Card 3: Evaluated */}
-        <div className="bg-white border border-canvas-border rounded-3xl p-5 shadow-card hover:shadow-panel transition-all group flex justify-between items-start">
-          <div>
-            <div className="p-3 rounded-2xl bg-purple-50 text-purple-600 w-fit mb-3">
-              <CheckCircle2 className="w-6 h-6" />
-            </div>
-            <div className="text-display-lg font-display font-bold text-slate-900">{totalEvaluatedCount}</div>
-            <div className="text-body font-sans font-medium text-slate-600">Evaluated</div>
-          </div>
-          <button onClick={() => onNavigate('evaluations')} className="text-slate-400 group-hover:text-purple-600 p-1">
-            <ArrowUpRight className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Stat Card 4: Average Score */}
+        {/* 2. Pending Evaluations */}
         <div className="bg-white border border-canvas-border rounded-3xl p-5 shadow-card hover:shadow-panel transition-all group flex justify-between items-start">
           <div>
             <div className="p-3 rounded-2xl bg-amber-50 text-amber-600 w-fit mb-3">
+              <Clock className="w-6 h-6" />
+            </div>
+            <div className="text-display-lg font-display font-bold text-slate-900">{pendingEvaluationsCount}</div>
+            <div className="text-body font-sans font-medium text-slate-600">Pending Evaluations</div>
+          </div>
+          <button onClick={() => onNavigate('evaluations')} className="text-slate-400 group-hover:text-amber-600 p-1">
+            <ArrowUpRight className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* 3. Completed Evaluations */}
+        <div className="bg-white border border-canvas-border rounded-3xl p-5 shadow-card hover:shadow-panel transition-all group flex justify-between items-start">
+          <div>
+            <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-600 w-fit mb-3">
+              <CheckCircle2 className="w-6 h-6" />
+            </div>
+            <div className="text-display-lg font-display font-bold text-slate-900">{totalEvaluatedCount}</div>
+            <div className="text-body font-sans font-medium text-slate-600">Completed Evaluations</div>
+          </div>
+          <button onClick={() => onNavigate('evaluations')} className="text-slate-400 group-hover:text-emerald-600 p-1">
+            <ArrowUpRight className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* 4. Average Score */}
+        <div className="bg-white border border-canvas-border rounded-3xl p-5 shadow-card hover:shadow-panel transition-all group flex justify-between items-start">
+          <div>
+            <div className="p-3 rounded-2xl bg-blue-50 text-blue-600 w-fit mb-3">
               <TrendingUp className="w-6 h-6" />
             </div>
             <div className="text-display-lg font-display font-bold text-slate-900">{avgClassScore}%</div>
             <div className="text-body font-sans font-medium text-slate-600">Average Score</div>
           </div>
-          <button onClick={() => onNavigate('reports')} className="text-slate-400 group-hover:text-amber-600 p-1">
+          <button onClick={() => onNavigate('reports')} className="text-slate-400 group-hover:text-blue-600 p-1">
             <ArrowUpRight className="w-5 h-5" />
           </button>
         </div>
@@ -169,23 +169,14 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
       {/* Main Dashboard Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* Left Column (8 cols): Recent Assignments */}
+        {/* 5. Recent Assignments (8 cols) */}
         <div className="lg:col-span-8 space-y-6">
           <div className="bg-white border border-canvas-border rounded-3xl p-6 shadow-card space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-heading font-display font-bold text-slate-900">Recent Assignments</h2>
-              <div className="flex items-center space-x-3">
-                <button onClick={() => onNavigate('assignments')} className="text-caption font-sans font-semibold text-forest-700 hover:underline">
-                  View All &rarr;
-                </button>
-                <button
-                  onClick={() => onNavigate('create-assignment')}
-                  className="px-3.5 py-1.5 rounded-xl bg-forest-900 hover:bg-forest-800 text-white font-display font-semibold text-caption flex items-center space-x-1 shadow-sm transition-all"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Create Assignment</span>
-                </button>
-              </div>
+              <button onClick={() => onNavigate('assignments')} className="text-caption font-sans font-semibold text-forest-700 hover:underline">
+                View All &rarr;
+              </button>
             </div>
 
             {assignments.length === 0 ? (
@@ -216,7 +207,7 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-canvas-border font-sans text-slate-700">
-                    {assignments.map((asm) => (
+                    {assignments.slice(0, 5).map((asm) => (
                       <tr key={asm.id} className="hover:bg-canvas-subtle/50 transition-colors">
                         <td className="p-3.5 font-semibold text-slate-900 font-display">{asm.title}</td>
                         <td className="p-3.5 text-caption font-mono">{asm.subject}</td>
@@ -239,36 +230,46 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
           </div>
         </div>
 
-        {/* Right Column (4 cols): Quick Actions */}
+        {/* 6. Pending Reviews Queue (4 cols) */}
         <div className="lg:col-span-4 space-y-6">
-          <div className="bg-white border border-canvas-border rounded-3xl p-6 shadow-card space-y-3">
-            <h3 className="text-heading font-display font-bold text-slate-900 mb-3">Tutor Actions</h3>
-
-            <div className="space-y-2.5">
-              <button
-                onClick={() => onNavigate('create-assignment')}
-                className="w-full p-3 rounded-2xl bg-forest-900 hover:bg-forest-800 text-white text-caption font-display font-semibold flex items-center space-x-3 transition-all"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Create New Assignment</span>
-              </button>
-
-              <button
-                onClick={() => onNavigate('evaluations')}
-                className="w-full p-3 rounded-2xl bg-canvas-subtle hover:bg-slate-200 text-slate-800 text-caption font-display font-semibold flex items-center space-x-3 transition-all border border-canvas-border"
-              >
-                <Send className="w-4 h-4 text-forest-700" />
-                <span>Submissions & Evaluations</span>
-              </button>
-
-              <button
-                onClick={() => onNavigate('reports')}
-                className="w-full p-3 rounded-2xl bg-canvas-subtle hover:bg-slate-200 text-slate-800 text-caption font-display font-semibold flex items-center space-x-3 transition-all border border-canvas-border"
-              >
-                <Download className="w-4 h-4 text-forest-700" />
-                <span>Generate Evaluation Report</span>
-              </button>
+          <div className="bg-white border border-canvas-border rounded-3xl p-6 shadow-card space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-heading font-display font-bold text-slate-900">Pending Reviews</h3>
+              <span className="text-xs font-mono font-bold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
+                {pendingEvaluationsCount} Pending
+              </span>
             </div>
+
+            {pendingSubmissions.length === 0 ? (
+              <div className="py-8 text-center text-slate-500 space-y-2 bg-canvas-subtle/40 rounded-2xl border border-canvas-border">
+                <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto" />
+                <h4 className="text-xs font-display font-bold text-slate-900">All submissions evaluated!</h4>
+                <p className="text-[11px] text-slate-500 font-sans px-4">
+                  No student answer sheets waiting for evaluation.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {pendingSubmissions.slice(0, 5).map((sub) => (
+                  <div key={sub.id} className="p-3.5 rounded-2xl bg-canvas-subtle/50 border border-canvas-border space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-mono font-semibold text-slate-900">Student: {sub.student_id || 'STUDENT'}</span>
+                      <span className="text-[10px] font-mono text-slate-500">{sub.input_type}</span>
+                    </div>
+                    <p className="text-xs text-slate-600 line-clamp-2 font-sans italic">
+                      "{sub.content}"
+                    </p>
+                    <button
+                      onClick={() => onNavigate('evaluations')}
+                      className="w-full py-1.5 px-3 rounded-xl bg-forest-900 hover:bg-forest-800 text-white font-display font-semibold text-[11px] flex items-center justify-center space-x-1 shadow-sm transition-all"
+                    >
+                      <Send className="w-3 h-3" />
+                      <span>Evaluate Now &rarr;</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

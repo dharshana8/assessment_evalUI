@@ -14,6 +14,7 @@ def create_assignment(payload: AssignmentCreate, db: Session = Depends(get_db)):
         title=payload.title,
         subject=payload.subject,
         question=payload.question,
+        reference_answer=payload.reference_answer,
         total_marks=payload.total_marks
     )
     db.add(assignment)
@@ -43,7 +44,7 @@ def create_assignment(payload: AssignmentCreate, db: Session = Depends(get_db)):
     return assignment
 
 @router.get("", response_model=List[AssignmentResponse])
-def list_assignments(db: Session = Depends(get_db)):
+def list_assignments(role: str = "STUDENT", db: Session = Depends(get_db)):
     assignments = db.query(Assignment).all()
     for a in assignments:
         for c in a.rubric_criteria:
@@ -51,10 +52,13 @@ def list_assignments(db: Session = Depends(get_db)):
                 c.keywords = json.loads(c.keywords) if c.keywords else []
             except Exception:
                 c.keywords = [k.strip() for k in str(c.keywords).split(",") if k.strip()]
+        # Strip reference_answer for STUDENT role
+        if role.upper() == "STUDENT":
+            a.reference_answer = None
     return assignments
 
 @router.get("/{assignment_id}", response_model=AssignmentResponse)
-def get_assignment(assignment_id: str, db: Session = Depends(get_db)):
+def get_assignment(assignment_id: str, role: str = "STUDENT", db: Session = Depends(get_db)):
     assignment = db.query(Assignment).filter(Assignment.id == assignment_id).first()
     if not assignment:
         raise HTTPException(status_code=404, detail="Assignment not found")
@@ -64,5 +68,8 @@ def get_assignment(assignment_id: str, db: Session = Depends(get_db)):
             c.keywords = json.loads(c.keywords) if c.keywords else []
         except Exception:
             c.keywords = [k.strip() for k in str(c.keywords).split(",") if k.strip()]
+
+    if role.upper() == "STUDENT":
+        assignment.reference_answer = None
 
     return assignment

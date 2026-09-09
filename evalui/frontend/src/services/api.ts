@@ -21,6 +21,11 @@ export const api = {
     return res.data;
   },
 
+  listUsers: async () => {
+    const res = await axios.get(`${API_BASE}/auth/users`);
+    return res.data;
+  },
+
 
   checkHealth: async () => {
 
@@ -32,6 +37,7 @@ export const api = {
     title: string;
     subject: string;
     question: string;
+    reference_answer?: string;
     total_marks: number;
     rubric_criteria: { description: string; max_marks: number; keywords: string[] }[];
   }): Promise<Assignment> => {
@@ -39,13 +45,13 @@ export const api = {
     return res.data;
   },
 
-  listAssignments: async (): Promise<Assignment[]> => {
-    const res = await axios.get(`${API_BASE}/assignments`);
+  listAssignments: async (role: string = 'STUDENT'): Promise<Assignment[]> => {
+    const res = await axios.get(`${API_BASE}/assignments`, { params: { role } });
     return res.data;
   },
 
-  getAssignment: async (id: string): Promise<Assignment> => {
-    const res = await axios.get(`${API_BASE}/assignments/${id}`);
+  getAssignment: async (id: string, role: string = 'STUDENT'): Promise<Assignment> => {
+    const res = await axios.get(`${API_BASE}/assignments/${id}`, { params: { role } });
     return res.data;
   },
 
@@ -96,6 +102,10 @@ export const api = {
   },
 
   getReportUrl: (evaluation_id: string) => {
+    return `${API_BASE}/evaluations/${evaluation_id}/report`;
+  },
+
+  getReportPdfUrl: (evaluation_id: string) => {
     return `${API_BASE}/evaluations/${evaluation_id}/report`;
   }
 };

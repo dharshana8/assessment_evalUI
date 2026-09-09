@@ -45,21 +45,31 @@ export const UserManagement: React.FC<UserManagementProps> = ({ currentUser }) =
   // Parse Live Preview of Test Email
   const parsedPreview = parseEmailIdentity(testEmail);
 
-  // User Database (loaded dynamically or initialized with current user)
-  const [users] = useState<UserRecord[]>(() => {
-    if (!currentUser) return [];
-    return [
-      {
-        id: currentUser.id || 'usr-1',
-        name: currentUser.name || 'Current User',
-        email: currentUser.email || '',
-        role: currentUser.role || 'ORG_ADMIN',
-        department: currentUser.department || 'Computer Science & Business Systems',
-        status: 'Active',
-        parsedAutomatically: true,
+  // User Database (loaded dynamically from database)
+  const [users, setUsers] = useState<UserRecord[]>([]);
+
+  React.useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        const uList = await api.listUsers();
+        if (Array.isArray(uList)) {
+          setUsers(uList.map((u: any) => ({
+            id: u.id,
+            name: u.name,
+            email: u.email,
+            role: u.role,
+            department: u.department || 'CSBS',
+            batch: u.batch,
+            status: 'Active',
+            parsedAutomatically: true
+          })));
+        }
+      } catch (e) {
+        console.error('Failed to load database users:', e);
       }
-    ];
-  });
+    };
+    loadUsers();
+  }, []);
 
   // Filter Users
   const filteredUsers = users.filter((u) => {

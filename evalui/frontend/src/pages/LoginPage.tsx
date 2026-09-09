@@ -69,7 +69,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
       const code = domain.split('.')[0].toUpperCase();
       const userRes: User = {
         id: 'usr_' + Date.now(),
-        name: name || email.split('@')[0].replace('.', ' ').title(),
+        name: name || email.split('@')[0].split('.').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' '),
         email: email.trim().toLowerCase(),
         role: role,
         organization_id: 'org_' + code.toLowerCase(),

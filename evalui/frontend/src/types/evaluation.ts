@@ -11,6 +11,7 @@ export interface Assignment {
   title: string;
   subject: string;
   question: string;
+  reference_answer?: string;
   total_marks: number;
   created_at: string;
   rubric_criteria: RubricCriterion[];
@@ -66,5 +67,20 @@ export interface EvaluationResultData {
   sentences: SentenceStruct[];
   criteria: CriterionEvaluation[];
   diagnostic_summary: string;
+  reliability?: {
+    score?: number;
+    status?: string;
+    issues?: string[];
+  };
+  duplicate?: {
+    flag?: boolean;
+    type?: string;
+    score?: number;
+  };
+  confidence?: {
+    score?: number;
+    level?: string;
+    review_required?: boolean;
+  };
   created_at: string;
 }

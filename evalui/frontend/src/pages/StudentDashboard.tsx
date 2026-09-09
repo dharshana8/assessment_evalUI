@@ -98,40 +98,40 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
             </div>
           </div>
           <div className="text-3xl font-display font-bold text-forest-900">{assignments.length}</div>
-          <div className="text-xs text-amber-700 font-medium">Available assignments</div>
+          <div className="text-xs text-amber-700 font-medium">Available Assignments</div>
         </div>
 
         <div className="bg-white border border-forest-100 rounded-2xl p-5 shadow-card space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-forest-500 uppercase tracking-wider">Submissions</span>
+            <span className="text-xs font-semibold text-forest-500 uppercase tracking-wider">Pending</span>
             <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
               <BookOpen className="w-5 h-5" />
             </div>
           </div>
           <div className="text-3xl font-display font-bold text-forest-900">{studentSubmissions.length}</div>
-          <div className="text-xs text-blue-700 font-medium">My answer submissions</div>
+          <div className="text-xs text-blue-700 font-medium">Pending Submissions</div>
         </div>
 
         <div className="bg-white border border-forest-100 rounded-2xl p-5 shadow-card space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-forest-500 uppercase tracking-wider">Evaluated</span>
+            <span className="text-xs font-semibold text-forest-500 uppercase tracking-wider">Completed</span>
             <div className="p-2 rounded-xl bg-mint-50 text-mint-700 border border-mint-100">
               <CheckCircle2 className="w-5 h-5" />
             </div>
           </div>
           <div className="text-3xl font-display font-bold text-forest-900">{completedCount}</div>
-          <div className="text-xs text-mint-700 font-medium">Evaluated results</div>
+          <div className="text-xs text-mint-700 font-medium">Completed Evaluations</div>
         </div>
 
         <div className="bg-white border border-forest-100 rounded-2xl p-5 shadow-card space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-forest-500 uppercase tracking-wider">Average Score</span>
+            <span className="text-xs font-semibold text-forest-500 uppercase tracking-wider">Recent Results</span>
             <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100">
               <Award className="w-5 h-5" />
             </div>
           </div>
           <div className="text-3xl font-display font-bold text-forest-900">{avgScore}%</div>
-          <div className="text-xs text-emerald-600 font-medium">Evaluation score</div>
+          <div className="text-xs text-emerald-600 font-medium">Recent Results Avg</div>
         </div>
 
       </div>
@@ -164,7 +164,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
                   <div className="pt-3 border-t border-forest-100 flex items-center justify-between">
                     <div className="text-xs text-forest-500 font-mono">
-                      Criteria: <strong className="text-forest-800">{asm.rubric_criteria?.length || 0} Items</strong>
+                      Maximum Marks: <strong className="text-forest-800">{asm.total_marks} Marks</strong>
                     </div>
                     <button
                       onClick={() => handleStart(asm)}

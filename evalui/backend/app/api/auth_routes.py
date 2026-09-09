@@ -168,3 +168,23 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
         department=parsed["department"],
         batch=parsed["batch"]
     )
+
+@router.get("/users")
+def list_users(db: Session = Depends(get_db)):
+    users = db.query(User).all()
+    res = []
+    for u in users:
+        parsed = parse_identity_from_email(u.email, name_fallback=u.name, role_override=u.role)
+        res.append({
+            "id": u.id,
+            "name": u.name,
+            "email": u.email,
+            "role": u.role,
+            "department": parsed["department"],
+            "batch": parsed["batch"],
+            "organization_name": parsed["organization_name"],
+            "organization_code": parsed["organization_code"],
+            "created_at": u.created_at.isoformat() if u.created_at else None
+        })
+    return res
+

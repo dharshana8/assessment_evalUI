@@ -4,9 +4,10 @@ import { EvaluationResultData } from '../types/evaluation';
 
 interface ScoreSummaryProps {
   data: EvaluationResultData;
+  isStudentView?: boolean;
 }
 
-export const ScoreSummary: React.FC<ScoreSummaryProps> = ({ data }) => {
+export const ScoreSummary: React.FC<ScoreSummaryProps> = ({ data, isStudentView = false }) => {
   const isOverridden = Math.abs(data.final_score - data.total_score) > 0.001;
 
   const entailedCount = data.criteria.filter(c => c.status === 'ENTAILED').length;
@@ -25,51 +26,56 @@ export const ScoreSummary: React.FC<ScoreSummaryProps> = ({ data }) => {
   return (
     <div className="bg-white rounded-3xl p-6 md:p-8 shadow-card border border-canvas-border space-y-6">
       
-      {/* Intelligence Pipeline Status Row */}
+  return (
+    <div className="bg-white rounded-3xl p-6 md:p-8 shadow-card border border-canvas-border space-y-6">
+      
+      {/* Evaluation Review Pipeline Badges */}
       <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-canvas-border">
         <div>
           <h3 className="text-caption font-mono font-semibold uppercase tracking-wider text-forest-600">
-            EvalUI Intelligence Audit Pipeline
+            {isStudentView ? 'Assessment Feedback Summary' : 'Tutor Evaluation Review Pipeline'}
           </h3>
           <p className="text-heading font-display font-bold text-slate-900 mt-0.5">
             {data.assignment_title}
           </p>
         </div>
 
-        {/* Pipeline Badges: Reliability, Duplicate, Confidence */}
+        {/* Audit Badges: Reliability, Duplicate, Confidence */}
         <div className="flex flex-wrap items-center gap-2 text-xs font-mono font-semibold">
           
-          {/* Reliability Badge */}
+          {/* Reference Reliability */}
           <div className={`px-3 py-1 rounded-full border flex items-center space-x-1 ${
             reliabilityStatus === 'RELIABLE'
               ? 'bg-mint-50 text-forest-900 border-mint-200'
               : 'bg-amber-50 text-amber-900 border-amber-200'
           }`}>
-            <span>Reliability: {reliabilityStatus} ({(reliabilityScore * 100).toFixed(0)}%)</span>
+            <span>Reference Reliability: {(reliabilityScore * 100).toFixed(0)}% ({reliabilityStatus})</span>
           </div>
 
-          {/* Duplicate Risk Badge */}
+          {/* Duplicate Status */}
           <div className={`px-3 py-1 rounded-full border flex items-center space-x-1 ${
             duplicateFlag
               ? 'bg-rose-50 text-rose-900 border-rose-200'
               : 'bg-emerald-50 text-emerald-900 border-emerald-200'
           }`}>
-            <span>Duplicate Risk: {duplicateType}</span>
+            <span>Duplicate: {duplicateFlag ? 'Yes' : 'No'}</span>
           </div>
 
-          {/* Confidence Badge */}
+          {/* AI Confidence */}
           <div className={`px-3 py-1 rounded-full border flex items-center space-x-1 ${
             confidenceLevel === 'HIGH'
               ? 'bg-mint-100 text-forest-950 border-mint-300 font-bold'
               : 'bg-amber-100 text-amber-950 border-amber-300 font-bold'
           }`}>
-            <span>Confidence: {confidenceLevel} ({(confidenceScore * 100).toFixed(0)}%)</span>
+            <span>Confidence: {(confidenceScore * 100).toFixed(0)}% ({confidenceLevel})</span>
           </div>
 
-          <div className="flex items-center space-x-1 text-xs text-slate-500 bg-canvas-subtle border border-canvas-border px-3 py-1 rounded-full">
-            <Clock className="w-3.5 h-3.5" />
-            <span>Latency: {data.processing_time.toFixed(2)}s</span>
-          </div>
+          {!isStudentView && (
+            <div className="flex items-center space-x-1 text-xs text-slate-500 bg-canvas-subtle border border-canvas-border px-3 py-1 rounded-full">
+              <Clock className="w-3.5 h-3.5" />
+              <span>Latency: {data.processing_time.toFixed(2)}s</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -79,7 +85,7 @@ export const ScoreSummary: React.FC<ScoreSummaryProps> = ({ data }) => {
         {/* Score Banner (AI Score vs Final Teacher Score Auditability) */}
         <div className="bg-forest-900 text-white rounded-2xl p-6 text-center shadow-md relative overflow-hidden border border-forest-800 space-y-2">
           <div className="text-caption font-sans font-semibold text-mint-300 uppercase tracking-wider">
-            {isOverridden ? 'Teacher Final Score' : 'Final Evaluated Score'}
+            {isOverridden ? 'Final Teacher Score' : 'Final AI Score'}
           </div>
 
           <div className="text-display-xl font-display font-bold text-white">
@@ -91,7 +97,7 @@ export const ScoreSummary: React.FC<ScoreSummaryProps> = ({ data }) => {
           </div>
 
           <div className="pt-2 border-t border-forest-800 text-xs font-mono text-emerald-200 flex justify-center items-center space-x-3">
-            <span>AI Calculated Score: <strong>{data.total_score}</strong></span>
+            <span>AI Score: <strong>{data.total_score} / {data.max_score}</strong></span>
             {isOverridden && (
               <span className="bg-amber-400/20 text-amber-300 border border-amber-400/40 px-2 py-0.5 rounded text-[10px] font-bold">
                 Teacher Overridden
@@ -100,7 +106,7 @@ export const ScoreSummary: React.FC<ScoreSummaryProps> = ({ data }) => {
           </div>
         </div>
 
-        {/* Progress Bar & Breakdown */}
+        {/* Progress Bar & Status Counts */}
         <div className="md:col-span-2 space-y-4">
           <div>
             <div className="flex justify-between text-body font-sans font-semibold text-slate-800 mb-2">
@@ -115,21 +121,21 @@ export const ScoreSummary: React.FC<ScoreSummaryProps> = ({ data }) => {
             </div>
           </div>
 
-          {/* Counts Badges */}
+          {/* Counts Badges: GREEN Supported, YELLOW Partial, RED Contradicted */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
             <div className="bg-mint-50 border border-mint-200 rounded-xl p-3 text-center">
               <div className="text-forest-900 font-display text-display-md font-bold">{entailedCount}</div>
-              <div className="text-caption font-sans font-bold uppercase text-forest-700">Correct / Entailed</div>
+              <div className="text-caption font-sans font-bold uppercase text-forest-700">Supported (Green)</div>
             </div>
 
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-center">
               <div className="text-amber-900 font-display text-display-md font-bold">{partialCount}</div>
-              <div className="text-caption font-sans font-bold uppercase text-amber-800">Partial Support</div>
+              <div className="text-caption font-sans font-bold uppercase text-amber-800">Partial (Yellow)</div>
             </div>
 
             <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 text-center">
               <div className="text-rose-900 font-display text-display-md font-bold">{contradictedCount}</div>
-              <div className="text-caption font-sans font-bold uppercase text-rose-800">Contradicted</div>
+              <div className="text-caption font-sans font-bold uppercase text-rose-800">Contradicted (Red)</div>
             </div>
 
             <div className="bg-slate-100 border border-slate-200 rounded-xl p-3 text-center">
