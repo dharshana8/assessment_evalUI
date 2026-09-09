@@ -11,19 +11,17 @@ class FeedbackEngine:
     ) -> bool:
         """
         Detect possible keyword stuffing:
-        High lexical keyword coverage (>=0.70) but weak semantic support AND weak NLI entailment.
-        Requirement 2 & 6: Coherent sentences with strong semantic or entailment support are NEVER keyword stuffed.
+        High lexical keyword coverage (>=0.70) but weak NLI entailment (<0.20).
+        Coherent statements with strong entailment (>=0.40) or solid semantic+entailment support are NEVER flagged.
         """
         high_keywords = lexical_score >= settings.KEYWORD_STUFFING_LEXICAL_MIN
-        
-        # If semantic similarity or entailment shows strong grammatical/conceptual support, it is NOT stuffing
-        if semantic_score >= 0.60 or entailment_score >= 0.40:
+
+        # Coherent statements with high entailment support are NEVER keyword stuffing
+        if entailment_score >= 0.40 or (entailment_score >= 0.25 and semantic_score >= 0.55):
             return False
 
-        low_semantic = semantic_score <= 0.60
-        low_entailment = entailment_score <= 0.40
-
-        return bool(high_keywords and low_semantic and low_entailment)
+        # Flag keyword stuffing when high keywords are present without meaningful NLI entailment
+        return bool(high_keywords and entailment_score < 0.20)
 
     @staticmethod
     def generate_criterion_feedback_data(
