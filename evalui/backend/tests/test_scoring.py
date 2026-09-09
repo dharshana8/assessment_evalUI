@@ -214,3 +214,86 @@ def test_scoring_multiple_rubric_criteria_and_max_ceiling():
     for c in res["criteria"]:
         assert c["awarded_marks"] <= c["max_marks"]
         assert "scoring_reason" in c
+
+
+def test_tcp_three_way_handshake_regression():
+    """
+    Regression Test: Correct, grammatically sound TCP 3-way handshake explanation must earn 100% full credit (8/8)
+    and must NOT be classified as keyword stuffing.
+    """
+    engine = EvaluationEngine()
+    rubric = [
+        {"id": "c1", "description": "Client sends SYN packet", "max_marks": 2.0, "keywords": ["client", "SYN", "packet"]},
+        {"id": "c2", "description": "Server responds with SYN-ACK packet", "max_marks": 2.0, "keywords": ["server", "SYN-ACK"]},
+        {"id": "c3", "description": "Client sends ACK packet", "max_marks": 2.0, "keywords": ["client", "ACK"]},
+        {"id": "c4", "description": "Connection established and data transfer begins", "max_marks": 2.0, "keywords": ["connection", "established", "data"]}
+    ]
+
+    answer = (
+        "The TCP three-way handshake is used to establish a reliable connection between a client and a server. "
+        "First, the client sends a SYN packet to request a connection. "
+        "The server responds with a SYN-ACK packet to acknowledge the request and synchronize its sequence number. "
+        "Finally, the client sends an ACK packet to acknowledge the server. "
+        "After these three steps, the TCP connection is established and data transmission can begin."
+    )
+
+    res = engine.evaluate_submission(answer, rubric)
+
+    assert res["total_score"] == 8.0
+    assert res["max_score"] == 8.0
+    assert res["percentage"] == 100.0
+    for crit in res["criteria"]:
+        assert crit["status"] == "ENTAILED"
+        assert crit["awarded_marks"] == crit["max_marks"]
+        assert crit["keyword_stuffing_detected"] is False
+
+
+def test_genuine_keyword_stuffing_detected():
+    """
+    Verify that an unnatural list of keywords without grammatical structure or semantic support is flagged as keyword stuffing.
+    """
+    engine = EvaluationEngine()
+    rubric = [
+        {"id": "c1", "description": "Detailed explanation of client sending SYN packet for session request.", "max_marks": 2.0, "keywords": ["client", "SYN", "packet"]}
+    ]
+
+    stuffed_answer = "SYN SYN packet client packet SYN client SYN."
+
+    res = engine.evaluate_submission(stuffed_answer, rubric)
+
+    assert res["criteria"][0]["keyword_stuffing_detected"] is True
+    assert res["criteria"][0]["awarded_marks"] == 0.0
+
+
+def test_contradicted_answer_zero_marks():
+    """
+    Verify that a direct factual contradiction (e.g. UDP is connection-oriented or TCP is connectionless) receives 0 marks.
+    """
+    engine = EvaluationEngine()
+    rubric = [
+        {"id": "c1", "description": "TCP is a connection-oriented protocol.", "max_marks": 2.0, "keywords": ["connection-oriented"]}
+    ]
+
+    contradicted_answer = "TCP is a connectionless protocol that never establishes a connection."
+
+    res = engine.evaluate_submission(contradicted_answer, rubric)
+
+    assert res["criteria"][0]["status"] == "CONTRADICTED"
+    assert res["criteria"][0]["awarded_marks"] == 0.0
+
+
+def test_partially_incomplete_answer_partial_credit():
+    """
+    Verify that an answer covering only part of a requirement receives partial credit.
+    """
+    engine = EvaluationEngine()
+    rubric = [
+        {"id": "c1", "description": "Client sends SYN packet to request connection.", "max_marks": 2.0, "keywords": ["client", "SYN", "packet"]}
+    ]
+
+    partial_answer = "The client sends a message to the server."
+
+    res = engine.evaluate_submission(partial_answer, rubric)
+
+    assert res["criteria"][0]["status"] in ["PARTIAL", "UNSUPPORTED"]
+    assert 0.0 < res["criteria"][0]["awarded_marks"] < 2.0

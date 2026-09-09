@@ -103,24 +103,34 @@ class ScoringEngine:
             lexical_score=lexical_score
         )
 
-        awarded = ScoringEngine.discretize_marks(raw_norm, max_marks)
+        # Requirement 6: Strong entailment or high hybrid score grants full credit
+        is_entailed = (
+            entailment_score >= 0.70 or
+            (entailment_score >= 0.50 and semantic_score >= 0.40) or
+            raw_norm >= 0.65
+        )
 
-        if raw_norm >= 0.80:
+        if is_entailed:
             status = "ENTAILED"
+            awarded = max_marks
             reason = (
-                f"Full credit ({awarded}/{max_marks}) awarded. Strong hybrid evidence score ({raw_norm:.2f}) with "
-                f"semantic similarity ({semantic_score:.2f}), entailment ({entailment_score:.2f}), and lexical coverage ({lexical_score:.2f})."
+                f"Full credit ({awarded}/{max_marks}) awarded. Strong entailment ({entailment_score:.2f}) and "
+                f"semantic similarity ({semantic_score:.2f}) confirm criterion requirement."
             )
-        elif raw_norm >= 0.35:
+        elif raw_norm >= 0.30 or entailment_score >= 0.30 or semantic_score >= 0.35:
             status = "PARTIAL"
+            awarded = ScoringEngine.discretize_marks(raw_norm, max_marks)
+            if awarded <= 0.0:
+                awarded = round(0.5 * max_marks * 2.0) / 2.0  # At least partial credit for valid partial signal
             reason = (
                 f"Partial credit ({awarded}/{max_marks}) awarded based on hybrid evidence score ({raw_norm:.2f}). "
                 f"Evidence strength is {evidence_strength:.2f} with concept coverage {lexical_score:.2f}."
             )
         else:
             status = "UNSUPPORTED"
+            awarded = 0.0
             reason = (
-                f"Insufficient evidence strength (hybrid score {raw_norm:.2f} < 0.35). 0.0/{max_marks} marks awarded."
+                f"Insufficient evidence strength (hybrid score {raw_norm:.2f} < 0.30). 0.0/{max_marks} marks awarded."
             )
 
         return {

@@ -187,14 +187,16 @@ class EvaluationEngine:
                 sim_val = sim_scores[idx] if idx < len(sim_scores) else 0.0
                 nli_res = nli_results[idx] if idx < len(nli_results) else {"entailment": 0.0, "contradiction": 0.0, "neutral": 1.0}
 
-                selection_val = 0.5 * sim_val + 0.5 * (nli_res["entailment"] + nli_res["contradiction"])
-                
-                if nli_res["contradiction"] > 0.60:
+                # Prioritize strong semantic similarity and entailment for matching evidence
+                selection_val = 0.6 * nli_res["entailment"] + 0.4 * sim_val
+
+                # If strong entailment support is found (> 0.50), select immediately
+                if nli_res["entailment"] > 0.50 and selection_val > best_combined_val:
+                    best_combined_val = selection_val + 2.0  # Boost entailed match
                     best_candidate_idx = idx
                     best_nli_res = nli_res
-                    break
 
-                if selection_val > best_combined_val:
+                elif selection_val > best_combined_val:
                     best_combined_val = selection_val
                     best_candidate_idx = idx
                     best_nli_res = nli_res
